@@ -1,7 +1,9 @@
-# OpenTidl
+# OpenTidl for .NET Standard 1.4 & 2.0
 **Free and open source API for TIDAL music streaming service**
 
-This API is wirtten in C# 5.0 (.NET 4.5) and has no external dependencies.
+This API is written in C# 7.1, with targetting profiles for both .NET Standard 1.4 and 2.0.
+
+*Forked from the original [.NET 4.5 code](https://github.com/jackfagner/OpenTidl) by Jack Fagner* 
 
 Most (relevant) functions used by TIDAL's web player or Android app are implemented, including:
 * Searching (albums, artists, tracks, videos)
@@ -14,11 +16,12 @@ Most (relevant) functions used by TIDAL's web player or Android app are implemen
 Searching and fetching metadata for albums/artists/tracks does not require an active TIDAL subscription.
 
 ## Installation
-OpenTidl is now available on [NuGet](https://www.nuget.org/packages/OpenTidl/)
+This version of OpenTidal is not yet available on NuGet.
+
+The original .NET 4.5 version of OpenTidl is available on [NuGet](https://www.nuget.org/packages/OpenTidl/)
 ```
 PM> Install-Package OpenTidl
 ```
-
 
 ## Disclaimer
 This product uses TIDAL but is not endorsed, certified or otherwise approved in any way by TIDAL. TIDAL is the registered trade mark of Aspiro.
