@@ -55,6 +55,12 @@ namespace OpenTidl
 
         #region methods
 
+        public ClientConfiguration SetToken(string token)
+        {
+            this.Token = token;
+            return this;
+        }
+
         private static String DefaultClientUniqueKey
         {
             get
