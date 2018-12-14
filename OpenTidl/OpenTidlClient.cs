@@ -36,7 +36,7 @@ namespace OpenTidl
         #region fields
 
         private const String FALLBACK_COUNTRY_CODE = "US";
-        private Lazy<String> _defaultCountryCode;
+        private string _defaultCountryCode;
 
         #endregion
 
@@ -47,7 +47,7 @@ namespace OpenTidl
         private RestClient RestClient { get; set; }
 
         private String LastSessionCountryCode { get; set; }
-        private String DefaultCountryCode { get { return _defaultCountryCode.Value; } }
+        private String DefaultCountryCode { get { return _defaultCountryCode; } }
 
         #endregion
 
@@ -94,12 +94,12 @@ namespace OpenTidl
             return !String.IsNullOrEmpty(LastSessionCountryCode) ? LastSessionCountryCode : DefaultCountryCode;
         }
 
-        private String GetDefaultCountryCode()
+        private async Task<String> GetDefaultCountryCodeAsync()
         {
             CountryModel cc = null;
             try
             {
-                cc = this.GetCountry(1000);
+                cc = await this.GetCountryAsync().ConfigureAwait(false); ;
             }
             catch { }
             if (cc != null && !String.IsNullOrEmpty(cc.CountryCode))
@@ -114,11 +114,17 @@ namespace OpenTidl
 
         #region construction
 
-        public OpenTidlClient(ClientConfiguration config)
+        public static async Task<OpenTidlClient> TryCreateAsync(ClientConfiguration config)
+        {
+            var client = new OpenTidlClient(config);
+            client._defaultCountryCode = (await client.GetCountryAsync()).CountryCode;
+            return client;
+        }
+
+        private OpenTidlClient(ClientConfiguration config)
         {
             this.Configuration = config;
             this.RestClient = new RestClient(config.ApiEndpoint, config.UserAgent, Header("X-Tidal-Token", config.Token));
-            this._defaultCountryCode = new Lazy<String>(() => GetDefaultCountryCode());
         }
 
         #endregion

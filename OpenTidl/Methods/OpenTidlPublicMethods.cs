@@ -32,9 +32,9 @@ namespace OpenTidl
     {
         #region album methods
 
-        public async Task<AlbumModel> GetAlbum(Int32 albumId)
+        public async Task<AlbumModel> GetAlbumAsync(Int32 albumId)
         {
-            return HandleResponse(await RestClient.Process<AlbumModel>(
+            return HandleResponse(await RestClient.ProcessAsync<AlbumModel>(
                 RestUtility.FormatUrl("/albums/{id}", new { id = albumId }), new
                 {
                     token = Configuration.Token,
@@ -42,9 +42,9 @@ namespace OpenTidl
                 }, null, "GET"));
         }
 
-        public async Task<ModelArray<AlbumModel>> GetAlbums(IEnumerable<Int32> albumIds)
+        public async Task<ModelArray<AlbumModel>> GetAlbumsAsync(IEnumerable<Int32> albumIds)
         {
-            return HandleResponse(await RestClient.Process<ModelArray<AlbumModel>>(
+            return HandleResponse(await RestClient.ProcessAsync<ModelArray<AlbumModel>>(
                 "/albums", new
                 {
                     ids = String.Join(",", albumIds),
@@ -53,9 +53,9 @@ namespace OpenTidl
                 }, null, "GET"));
         }
 
-        public async Task<JsonList<AlbumModel>> GetSimilarAlbums(Int32 albumId)
+        public async Task<JsonList<AlbumModel>> GetSimilarAlbumsAsync(Int32 albumId)
         {
-            return HandleResponse(await RestClient.Process<JsonList<AlbumModel>>(
+            return HandleResponse(await RestClient.ProcessAsync<JsonList<AlbumModel>>(
                 RestUtility.FormatUrl("/albums/{id}/similar", new { id = albumId }), new
                 {
                     token = Configuration.Token,
@@ -63,9 +63,9 @@ namespace OpenTidl
                 }, null, "GET"));
         }
 
-        public async Task<JsonList<TrackModel>> GetAlbumTracks(Int32 albumId)
+        public async Task<JsonList<TrackModel>> GetAlbumTracksAsync(Int32 albumId)
         {
-            return HandleResponse(await RestClient.Process<JsonList<TrackModel>>(
+            return HandleResponse(await RestClient.ProcessAsync<JsonList<TrackModel>>(
                 RestUtility.FormatUrl("/albums/{id}/tracks", new { id = albumId }), new
                 {
                     token = Configuration.Token,
@@ -73,9 +73,9 @@ namespace OpenTidl
                 }, null, "GET"));
         }
 
-        public async Task<AlbumReviewModel> GetAlbumReview(Int32 albumId)
+        public async Task<AlbumReviewModel> GetAlbumReviewAsync(Int32 albumId)
         {
-            return HandleResponse(await RestClient.Process<AlbumReviewModel>(
+            return HandleResponse(await RestClient.ProcessAsync<AlbumReviewModel>(
                 RestUtility.FormatUrl("/albums/{id}/review", new { id = albumId }), new
                 {
                     token = Configuration.Token,
@@ -88,9 +88,9 @@ namespace OpenTidl
 
         #region artist methods
 
-        public async Task<ArtistModel> GetArtist(Int32 artistId)
+        public async Task<ArtistModel> GetArtistAsync(Int32 artistId)
         {
-            return HandleResponse(await RestClient.Process<ArtistModel>(
+            return HandleResponse(await RestClient.ProcessAsync<ArtistModel>(
                 RestUtility.FormatUrl("/artists/{id}", new { id = artistId }), new
                 {
                     token = Configuration.Token,
@@ -98,9 +98,9 @@ namespace OpenTidl
                 }, null, "GET"));
         }
 
-        public async Task<JsonList<AlbumModel>> GetArtistAlbums(Int32 artistId, AlbumFilter filter, Int32 offset = 0, Int32 limit = 9999)
+        public async Task<JsonList<AlbumModel>> GetArtistAlbumsAsync(Int32 artistId, AlbumFilter filter, Int32 offset = 0, Int32 limit = 9999)
         {
-            return HandleResponse(await RestClient.Process<JsonList<AlbumModel>>(
+            return HandleResponse(await RestClient.ProcessAsync<JsonList<AlbumModel>>(
                 RestUtility.FormatUrl("/artists/{id}/albums", new { id = artistId }), new
                 {
                     filter = filter.ToString(),
@@ -111,9 +111,9 @@ namespace OpenTidl
                 }, null, "GET"));
         }
 
-        public async Task<JsonList<TrackModel>> GetRadioFromArtist(Int32 artistId, Int32 offset = 0, Int32 limit = 9999)
+        public async Task<JsonList<TrackModel>> GetRadioFromArtistAsync(Int32 artistId, Int32 offset = 0, Int32 limit = 9999)
         {
-            return HandleResponse(await RestClient.Process<JsonList<TrackModel>>(
+            return HandleResponse(await RestClient.ProcessAsync<JsonList<TrackModel>>(
                 RestUtility.FormatUrl("/artists/{id}/radio", new { id = artistId }), new
                 {
                     offset = offset,
@@ -123,9 +123,9 @@ namespace OpenTidl
                 }, null, "GET"));
         }
 
-        public async Task<JsonList<ArtistModel>> GetSimilarArtists(Int32 artistId, Int32 offset = 0, Int32 limit = 9999)
+        public async Task<JsonList<ArtistModel>> GetSimilarArtistsAsync(Int32 artistId, Int32 offset = 0, Int32 limit = 9999)
         {
-            return HandleResponse(await RestClient.Process<JsonList<ArtistModel>>(
+            return HandleResponse(await RestClient.ProcessAsync<JsonList<ArtistModel>>(
                 RestUtility.FormatUrl("/artists/{id}/similar", new { id = artistId }), new
                 {
                     offset = offset,
@@ -135,9 +135,9 @@ namespace OpenTidl
                 }, null, "GET"));
         }
 
-        public async Task<JsonList<TrackModel>> GetArtistTopTracks(Int32 artistId, Int32 offset = 0, Int32 limit = 9999)
+        public async Task<JsonList<TrackModel>> GetArtistTopTracksAsync(Int32 artistId, Int32 offset = 0, Int32 limit = 9999)
         {
-            return HandleResponse(await RestClient.Process<JsonList<TrackModel>>(
+            return HandleResponse(await RestClient.ProcessAsync<JsonList<TrackModel>>(
                 RestUtility.FormatUrl("/artists/{id}/toptracks", new { id = artistId }), new
                 {
                     offset = offset,
@@ -147,9 +147,9 @@ namespace OpenTidl
                 }, null, "GET"));
         }
 
-        public async Task<JsonList<VideoModel>> GetArtistVideos(Int32 artistId, Int32 offset = 0, Int32 limit = 9999)
+        public async Task<JsonList<VideoModel>> GetArtistVideosAsync(Int32 artistId, Int32 offset = 0, Int32 limit = 9999)
         {
-            return HandleResponse(await RestClient.Process<JsonList<VideoModel>>(
+            return HandleResponse(await RestClient.ProcessAsync<JsonList<VideoModel>>(
                 RestUtility.FormatUrl("/artists/{id}/videos", new { id = artistId }), new
                 {
                     offset = offset,
@@ -159,9 +159,9 @@ namespace OpenTidl
                 }, null, "GET"));
         }
 
-        public async Task<ArtistBiographyModel> GetArtistBiography(Int32 artistId)
+        public async Task<ArtistBiographyModel> GetArtistBiographyAsync(Int32 artistId)
         {
-            return HandleResponse(await RestClient.Process<ArtistBiographyModel>(
+            return HandleResponse(await RestClient.ProcessAsync<ArtistBiographyModel>(
                 RestUtility.FormatUrl("/artists/{id}/bio", new { id = artistId }), new
                 {
                     token = Configuration.Token,
@@ -169,9 +169,9 @@ namespace OpenTidl
                 }, null, "GET"));
         }
 
-        public async Task<JsonList<LinkModel>> GetArtistLinks(Int32 artistId, Int32 limit = 9999)
+        public async Task<JsonList<LinkModel>> GetArtistLinksAsync(Int32 artistId, Int32 limit = 9999)
         {
-            return HandleResponse(await RestClient.Process<JsonList<LinkModel>>(
+            return HandleResponse(await RestClient.ProcessAsync<JsonList<LinkModel>>(
                 RestUtility.FormatUrl("/artists/{id}/links", new { id = artistId }), new
                 {
                     limit = limit,
@@ -185,9 +185,9 @@ namespace OpenTidl
 
         #region country methods
 
-        public async Task<CountryModel> GetCountry()
+        public async Task<CountryModel> GetCountryAsync()
         {
-            return HandleResponse(await RestClient.Process<CountryModel>("/country", null, null, "GET"));
+            return HandleResponse(await RestClient.ProcessAsync<CountryModel>("/country", null, null, "GET"));
         }
 
         #endregion
@@ -195,9 +195,9 @@ namespace OpenTidl
         
         #region search methods
 
-        public async Task<JsonList<AlbumModel>> SearchAlbums(String query, Int32 offset = 0, Int32 limit = 9999)
+        public async Task<JsonList<AlbumModel>> SearchAlbumsAsync(String query, Int32 offset = 0, Int32 limit = 9999)
         {
-            return HandleResponse(await RestClient.Process<JsonList<AlbumModel>>(
+            return HandleResponse(await RestClient.ProcessAsync<JsonList<AlbumModel>>(
                 "/search/albums", new
                 {
                     query = query,
@@ -208,9 +208,9 @@ namespace OpenTidl
                 }, null, "GET"));
         }
 
-        public async Task<JsonList<ArtistModel>> SearchArtists(String query, Int32 offset = 0, Int32 limit = 9999)
+        public async Task<JsonList<ArtistModel>> SearchArtistsAsync(String query, Int32 offset = 0, Int32 limit = 9999)
         {
-            return HandleResponse(await RestClient.Process<JsonList<ArtistModel>>(
+            return HandleResponse(await RestClient.ProcessAsync<JsonList<ArtistModel>>(
                 "/search/artists", new
                 {
                     query = query,
@@ -221,9 +221,9 @@ namespace OpenTidl
                 }, null, "GET"));
         }
 
-        public async Task<JsonList<PlaylistModel>> SearchPlaylists(String query, Int32 offset = 0, Int32 limit = 9999)
+        public async Task<JsonList<PlaylistModel>> SearchPlaylistsAsync(String query, Int32 offset = 0, Int32 limit = 9999)
         {
-            return HandleResponse(await RestClient.Process<JsonList<PlaylistModel>>(
+            return HandleResponse(await RestClient.ProcessAsync<JsonList<PlaylistModel>>(
                 "/search/playlists", new
                 {
                     query = query,
@@ -234,9 +234,9 @@ namespace OpenTidl
                 }, null, "GET"));
         }
 
-        public async Task<JsonList<TrackModel>> SearchTracks(String query, Int32 offset = 0, Int32 limit = 9999)
+        public async Task<JsonList<TrackModel>> SearchTracksAsync(String query, Int32 offset = 0, Int32 limit = 9999)
         {
-            return HandleResponse(await RestClient.Process<JsonList<TrackModel>>(
+            return HandleResponse(await RestClient.ProcessAsync<JsonList<TrackModel>>(
                 "/search/tracks", new
                 {
                     query = query,
@@ -247,9 +247,9 @@ namespace OpenTidl
                 }, null, "GET"));
         }
 
-        public async Task<JsonList<VideoModel>> SearchVideos(String query, Int32 offset = 0, Int32 limit = 9999)
+        public async Task<JsonList<VideoModel>> SearchVideosAsync(String query, Int32 offset = 0, Int32 limit = 9999)
         {
-            return HandleResponse(await RestClient.Process<JsonList<VideoModel>>(
+            return HandleResponse(await RestClient.ProcessAsync<JsonList<VideoModel>>(
                 "/search/videos", new
                 {
                     query = query,
@@ -260,9 +260,9 @@ namespace OpenTidl
                 }, null, "GET"));
         }
 
-        public async Task<SearchResultModel> Search(String query, SearchType types, Int32 offset = 0, Int32 limit = 9999)
+        public async Task<SearchResultModel> SearchAsync(String query, SearchType types, Int32 offset = 0, Int32 limit = 9999)
         {
-            return HandleResponse(await RestClient.Process<SearchResultModel>(
+            return HandleResponse(await RestClient.ProcessAsync<SearchResultModel>(
                 "/search", new
                 {
                     query = query,
@@ -279,9 +279,9 @@ namespace OpenTidl
 
         #region track methods
 
-        public async Task<TrackModel> GetTrack(Int32 trackId)
+        public async Task<TrackModel> GetTrackAsync(Int32 trackId)
         {
-            return HandleResponse(await RestClient.Process<TrackModel>(
+            return HandleResponse(await RestClient.ProcessAsync<TrackModel>(
                 RestUtility.FormatUrl("/tracks/{id}", new { id = trackId }), new
                 {
                     token = Configuration.Token,
@@ -289,9 +289,9 @@ namespace OpenTidl
                 }, null, "GET"));
         }
 
-        public async Task<JsonList<ContributorModel>> GetTrackContributors(Int32 trackId)
+        public async Task<JsonList<ContributorModel>> GetTrackContributorsAsync(Int32 trackId)
         {
-            return HandleResponse(await RestClient.Process<JsonList<ContributorModel>>(
+            return HandleResponse(await RestClient.ProcessAsync<JsonList<ContributorModel>>(
                 RestUtility.FormatUrl("/tracks/{id}/contributors", new { id = trackId }), new
                 {
                     token = Configuration.Token,
@@ -299,12 +299,12 @@ namespace OpenTidl
                 }, null, "GET"));
         }
 
-        public async Task<JsonList<TrackModel>> GetRadioFromTrack(Int32 trackId, Int32 limit = 9999)
+        public async Task<JsonList<TrackModel>> GetRadioFromTrackAsync(Int32 trackId, Int32 limit = 9999)
         {
-            return HandleResponse(await RestClient.Process<JsonList<TrackModel>>(
+            return HandleResponse(await RestClient.ProcessAsync<JsonList<TrackModel>>(
                 RestUtility.FormatUrl("/tracks/{id}/radio", new { id = trackId }), new
                 {
-                    limit = limit,
+                    limit,
                     token = Configuration.Token,
                     countryCode = GetCountryCode()
                 }, null, "GET"));

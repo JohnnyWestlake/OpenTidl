@@ -33,9 +33,9 @@ namespace OpenTidl
     {
         #region login methods
 
-        public async Task<OpenTidlSession> LoginWithFacebook(String accessToken)
+        public async Task<OpenTidlSession> LoginWithFacebookAsync(String accessToken)
         {
-            return new OpenTidlSession(this, HandleLoginResponse(await RestClient.Process<LoginModel>("/login/facebook", null, new
+            return new OpenTidlSession(this, HandleLoginResponse(await RestClient.ProcessAsync<LoginModel>("/login/facebook", null, new
             {
                 accessToken = accessToken,
                 token = Configuration.Token,
@@ -57,9 +57,9 @@ namespace OpenTidl
             }, "POST"), LoginType.Spid));
         }*/
 
-        public async Task<OpenTidlSession> LoginWithToken(String authenticationToken)
+        public async Task<OpenTidlSession> LoginWithTokenAsync(String authenticationToken)
         {
-            return new OpenTidlSession(this, HandleLoginResponse(await RestClient.Process<LoginModel>("/login/token", null, new
+            return new OpenTidlSession(this, HandleLoginResponse(await RestClient.ProcessAsync<LoginModel>("/login/token", null, new
             {
                 authenticationToken = authenticationToken,
                 token = Configuration.Token,
@@ -68,9 +68,9 @@ namespace OpenTidl
             }, "POST"), LoginType.Token));
         }
 
-        public async Task<OpenTidlSession> LoginWithTwitter(String accessToken, String accessTokenSecret)
+        public async Task<OpenTidlSession> LoginWithTwitterAsync(String accessToken, String accessTokenSecret)
         {
-            return new OpenTidlSession(this, HandleLoginResponse(await RestClient.Process<LoginModel>("/login/twitter", null, new
+            return new OpenTidlSession(this, HandleLoginResponse(await RestClient.ProcessAsync<LoginModel>("/login/twitter", null, new
             {
                 accessToken = accessToken,
                 accessTokenSecret = accessTokenSecret,
@@ -80,9 +80,9 @@ namespace OpenTidl
             }, "POST"), LoginType.Twitter));
         }
 
-        public async Task<OpenTidlSession> LoginWithUsername(String username, String password)
+        public async Task<OpenTidlSession> LoginWithUsernameAsync(String username, String password)
         {
-            return new OpenTidlSession(this, HandleLoginResponse(await RestClient.Process<LoginModel>("/login/username", null, new
+            return new OpenTidlSession(this, HandleLoginResponse(await RestClient.ProcessAsync<LoginModel>("/login/username", null, new
             {
                 username = username,
                 password = password,
@@ -97,9 +97,9 @@ namespace OpenTidl
 
         #region session methods
 
-        public async Task<OpenTidlSession> RestoreSession(String sessionId)
+        public async Task<OpenTidlSession> RestoreSessionAsync(String sessionId)
         {
-            return new OpenTidlSession(this, LoginModel.FromSession(HandleSessionResponse(await RestClient.Process<SessionModel>(
+            return new OpenTidlSession(this, LoginModel.FromSession(HandleSessionResponse(await RestClient.ProcessAsync<SessionModel>(
                 RestUtility.FormatUrl("/sessions/{sessionId}", new { sessionId = sessionId }),
                 null, null, "GET"))));
         }
@@ -109,9 +109,9 @@ namespace OpenTidl
 
         #region user methods
 
-        public async Task<RecoverPasswordResponseModel> RecoverPassword(String username)
+        public async Task<RecoverPasswordResponseModel> RecoverPasswordAsync(String username)
         {
-            return HandleResponse(await RestClient.Process<RecoverPasswordResponseModel>(
+            return HandleResponse(await RestClient.ProcessAsync<RecoverPasswordResponseModel>(
                 RestUtility.FormatUrl("/users/{username}/recoverpassword", new { username = username }), new
                 {
                     token = Configuration.Token,

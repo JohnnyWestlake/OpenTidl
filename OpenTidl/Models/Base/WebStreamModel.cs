@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using OpenTidl;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 
 namespace OpenTidl.Models.Base
 {
@@ -31,17 +32,25 @@ namespace OpenTidl.Models.Base
 
         #region construction
 
-        internal WebStreamModel(HttpWebResponse response)
+        static internal async Task<WebStreamModel> CreateAsync(HttpResponseMessage response)
         {
             try
             {
                 if (response != null)
                 {
-                    this.ContentLength = response.ContentLength;
-                    this.Stream = response.GetResponseStream();
+                    var model = new WebStreamModel();
+                    model.ContentLength = response.Content.Headers.ContentLength.Value;
+                    model.Stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
                 }
             }
             catch { }
+
+            return null;
+        }
+
+        private WebStreamModel()
+        {
+            
         }
 
         #endregion

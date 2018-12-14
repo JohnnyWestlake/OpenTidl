@@ -26,6 +26,8 @@ using System.Threading;
 using System.IO;
 using OpenTidl.Models.Base;
 using System.Runtime.Serialization;
+using System.Net.Http;
+using System.Net.Http.Headers;
 
 namespace OpenTidl.Transport
 {
@@ -42,7 +44,9 @@ namespace OpenTidl.Transport
 
         #region methods
 
-        internal async Task<RestResponse<T>> Process<T>(String path, Object query, Object request, String method, params KeyValuePair<String, String>[] extraHeaders) where T : ModelBase
+        HttpClient client { get; }
+
+        internal async Task<RestResponse<T>> ProcessAsync<T>(String path, Object query, Object request, String method, params KeyValuePair<String, String>[] extraHeaders) where T : ModelBase
         {
             var encoding = new UTF8Encoding(false);
             var queryString = RestUtility.GetFormEncodedString(query);
@@ -51,48 +55,35 @@ namespace OpenTidl.Transport
             var req = CreateRequest(url, method, extraHeaders);
             if (request != null)
             {
-                req.ContentType = "application/x-www-form-urlencoded; charset=UTF-8";
-                using (var sw = new StreamWriter(req.GetRequestStream(), encoding))
-                    sw.Write(RestUtility.GetFormEncodedString(request));
+                req.Content = new FormUrlEncodedContent(RestUtility.GetFormEncodedList(request));
             }
-            HttpWebResponse response;
+
+            HttpResponseMessage response;
             try
             {
-                response = (await req.GetResponseAsync()) as HttpWebResponse;
+                response = await client.SendAsync(req).ConfigureAwait(false);
+
+                var str = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                return new RestResponse<T>(str, (Int32)response.StatusCode, response.Headers.ETag.Tag);
+
             }
-            catch (WebException webEx)
-            {
-                response = webEx.Response as HttpWebResponse;
-            }
+            //catch (HttpRequestException webEx)
+            //{
+            //    response = webEx.
+            //}
             catch (Exception ex)
             {
                 return new RestResponse<T>(ex);
             }
-            using (var sr = new StreamReader(response.GetResponseStream(), encoding))
-            {
-                return new RestResponse<T>(sr.ReadToEnd(), (Int32)response.StatusCode, response.Headers[HttpResponseHeader.ETag]);
-            }
         }
 
-        internal Stream GetStream(String url)
-        {
-            try
-            {
-                var response = GetWebResponse(url);
-                if (response != null)
-                    return response.GetResponseStream();
-            }
-            catch { }
-            return null;
-        }
-
-        internal HttpWebResponse GetWebResponse(String url)
+        internal async Task<HttpResponseMessage> GetWebResponseAsync(String url)
         {
             var req = CreateRequest(url, "GET", null);
-            req.Timeout = 2000;
             try
             {
-                return req.GetResponse() as HttpWebResponse;
+                var resp = await client.SendAsync(req).ConfigureAwait(false);
+                return resp;
             }
             catch
             {
@@ -100,20 +91,29 @@ namespace OpenTidl.Transport
             }
         }
 
-        private HttpWebRequest CreateRequest(String url, String method, KeyValuePair<String, String>[] extraHeaders)
+        internal async Task<WebStreamModel> GetWebStreamModelAsync(String url)
         {
-            var req = HttpWebRequest.Create(url) as HttpWebRequest;
-            req.UserAgent = this.UserAgent;
-            req.Method = method;
-            if (this.Headers != null)
+            var req = CreateRequest(url, "GET", null);
+            try
             {
-                foreach (var h in this.Headers)
-                    req.Headers[h.Key] = h.Value;
+                var resp = await client.SendAsync(req).ConfigureAwait(false);
+                return await WebStreamModel.CreateAsync(resp).ConfigureAwait(false);
             }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private HttpRequestMessage CreateRequest(String url, String method, KeyValuePair<String, String>[] extraHeaders)
+        {
+            var req = new HttpRequestMessage(new HttpMethod(method), url);
+            req.Headers.UserAgent.ParseAdd(this.UserAgent);
+            
             if (extraHeaders != null)
             {
                 foreach (var h in extraHeaders)
-                    req.Headers[h.Key] = h.Value;
+                    req.Headers.TryAddWithoutValidation(h.Key, h.Value);
             }
             return req;
         }
@@ -126,8 +126,14 @@ namespace OpenTidl.Transport
         internal RestClient(String apiEndpoint, String userAgent, params KeyValuePair<String, String>[] headers)
         {
             this.ApiEndpoint = apiEndpoint ?? "";
-            this.UserAgent = userAgent;
-            this.Headers = headers;
+
+            client = new HttpClient();
+            client.DefaultRequestHeaders.UserAgent.ParseAdd(userAgent);
+            if (headers != null)
+            {
+                foreach (var h in headers)
+                    client.DefaultRequestHeaders.TryAddWithoutValidation(h.Key, h.Value);
+            }
         }
 
         #endregion

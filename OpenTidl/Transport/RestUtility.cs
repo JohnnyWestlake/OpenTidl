@@ -23,6 +23,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net;
 using System.Text.RegularExpressions;
+using System.Reflection;
 
 namespace OpenTidl.Transport
 {
@@ -34,6 +35,14 @@ namespace OpenTidl.Transport
                 return null;
             return String.Join("&", data.GetType().GetProperties().Select(o =>
                 String.Format("{0}={1}", WebUtility.UrlEncode(o.Name), FormEncode(o.GetValue(data)))));
+        }
+
+        internal static List<KeyValuePair<string, string>> GetFormEncodedList(Object data)
+        {
+            if (data == null)
+                return null;
+            return data.GetType().GetProperties().Select(
+                o => new KeyValuePair<string, string>(WebUtility.UrlEncode(o.Name), FormEncode(o.GetValue(data)))).ToList();
         }
 
         private static String FormEncode(Object value)

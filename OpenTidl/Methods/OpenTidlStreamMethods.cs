@@ -17,15 +17,11 @@
     along with OpenTidl.  If not, see <http://www.gnu.org/licenses/>.
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using OpenTidl.Models;
 using OpenTidl.Models.Base;
 using OpenTidl.Transport;
 using OpenTidl.Enums;
-using System.IO;
 
 namespace OpenTidl
 {
@@ -36,15 +32,15 @@ namespace OpenTidl
         /// <summary>
         /// Helper method to retrieve a stream with an album cover image
         /// </summary>
-        public WebStreamModel GetAlbumCover(AlbumModel model, AlbumCoverSize size)
+        public Task<WebStreamModel> GetAlbumCoverAsync(AlbumModel model, AlbumCoverSize size)
         {
-            return GetAlbumCover(model.Cover, model.Id, size);
+            return GetAlbumCoverAsync(model.Cover, model.Id, size);
         }
 
         /// <summary>
         /// Helper method to retrieve a stream with an album cover image
         /// </summary>
-        public WebStreamModel GetAlbumCover(String cover, Int32 albumId, AlbumCoverSize size)
+        public Task<WebStreamModel> GetAlbumCoverAsync(String cover, Int32 albumId, AlbumCoverSize size)
         {
             var w = 750;
             var h = 750;
@@ -55,24 +51,24 @@ namespace OpenTidl
                 url = String.Format("http://resources.wimpmusic.com/images/{0}/{1}x{2}.jpg", cover.Replace('-', '/'), w, h);
             else
                 url = String.Format("http://images.tidalhifi.com/im/im?w={1}&h={2}&albumid={0}&noph", albumId, w, h);
-            return new WebStreamModel(RestClient.GetWebResponse(url));
+            return RestClient.GetWebStreamModelAsync(url);
         }
 
         /// <summary>
         /// Helper method to retrieve a stream with an artists picture
         /// </summary>
-        public WebStreamModel GetArtistPicture(ArtistModel model, ArtistPictureSize size)
+        public Task<WebStreamModel> GetArtistPictureAsync(ArtistModel model, ArtistPictureSize size)
         {
-            return GetArtistPicture(model.Picture, model.Id, size);
+            return GetArtistPictureAsync(model.Picture, model.Id, size);
         }
 
         /// <summary>
         /// Helper method to retrieve a stream with an artists picture
         /// </summary>
-        public WebStreamModel GetArtistPicture(String picture, Int32 artistId, ArtistPictureSize size)
+        public Task<WebStreamModel> GetArtistPictureAsync(String picture, Int32 artistId, ArtistPictureSize size)
         {
-            var w = 750;
-            var h = 500;
+            int w = 750;
+            int h = 500;
             if (!RestUtility.ParseImageSize(size.ToString(), out w, out h))
                 throw new ArgumentException("Invalid image size", "size");
             String url = null;
@@ -80,21 +76,21 @@ namespace OpenTidl
                 url = String.Format("http://resources.wimpmusic.com/images/{0}/{1}x{2}.jpg", picture.Replace('-', '/'), w, h);
             else
                 url = String.Format("http://images.tidalhifi.com/im/im?w={1}&h={2}&artistid={0}&noph", artistId, w, h);
-            return new WebStreamModel(RestClient.GetWebResponse(url));
+            return RestClient.GetWebStreamModelAsync(url);
         }
 
         /// <summary>
         /// Helper method to retrieve a stream with a playlist image
         /// </summary>
-        public WebStreamModel GetPlaylistImage(PlaylistModel model, PlaylistImageSize size)
+        public Task<WebStreamModel> GetPlaylistImageAsync(PlaylistModel model, PlaylistImageSize size)
         {
-            return GetPlaylistImage(model.Image, model.Uuid, size);
+            return GetPlaylistImageAsync(model.Image, model.Uuid, size);
         }
 
         /// <summary>
         /// Helper method to retrieve a stream with a playlist image
         /// </summary>
-        public WebStreamModel GetPlaylistImage(String image, String playlistUuid, PlaylistImageSize size)
+        public Task<WebStreamModel> GetPlaylistImageAsync(String image, String playlistUuid, PlaylistImageSize size)
         {
             var w = 750;
             var h = 500;
@@ -105,21 +101,21 @@ namespace OpenTidl
                 url = String.Format("http://resources.wimpmusic.com/images/{0}/{1}x{2}.jpg", image.Replace('-', '/'), w, h);
             else
                 url = String.Format("http://images.tidalhifi.com/im/im?w={1}&h={2}&uuid={0}&rows=2&cols=3&noph", playlistUuid, w, h);
-            return new WebStreamModel(RestClient.GetWebResponse(url));
+            return RestClient.GetWebStreamModelAsync(url);
         }
 
         /// <summary>
         /// Helper method to retrieve a stream with a video conver image
         /// </summary>
-        public WebStreamModel GetVideoImage(VideoModel model, VideoImageSize size)
+        public Task<WebStreamModel> GetVideoImageAsync(VideoModel model, VideoImageSize size)
         {
-            return GetVideoImage(model.ImageId, model.ImagePath, size);
+            return GetVideoImageAsync(model.ImageId, model.ImagePath, size);
         }
 
         /// <summary>
         /// Helper method to retrieve a stream with a video conver image
         /// </summary>
-        public WebStreamModel GetVideoImage(String imageId, String imagePath, VideoImageSize size)
+        public Task<WebStreamModel> GetVideoImageAsync(String imageId, String imagePath, VideoImageSize size)
         {
             var w = 750;
             var h = 500;
@@ -130,7 +126,7 @@ namespace OpenTidl
                 url = String.Format("http://resources.wimpmusic.com/images/{0}/{1}x{2}.jpg", imageId.Replace('-', '/'), w, h);
             else
                 url = String.Format("http://images.tidalhifi.com/im/im?w={1}&h={2}&img={0}&noph", imagePath, w, h);
-            return new WebStreamModel(RestClient.GetWebResponse(url));
+            return RestClient.GetWebStreamModelAsync(url);
         }
 
         #endregion
@@ -141,9 +137,9 @@ namespace OpenTidl
         /// <summary>
         /// Helper method to retrieve the audio/video stream with correct user-agent, etc.
         /// </summary>
-        public WebStreamModel GetWebStream(String streamUrl)
+        public Task<WebStreamModel> GetWebStreamAsync(String streamUrl)
         {
-            return new WebStreamModel(RestClient.GetWebResponse(streamUrl));
+            return RestClient.GetWebStreamModelAsync(streamUrl);
         }
 
         #endregion
