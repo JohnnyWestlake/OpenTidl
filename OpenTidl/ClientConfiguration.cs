@@ -1,4 +1,4 @@
-﻿/*
+/*
     Copyright (C) 2015  Jack Fagner
 
     This file is part of OpenTidl.
@@ -30,7 +30,7 @@ namespace OpenTidl
         #region static properties
 
         private static Lazy<ClientConfiguration> _defaultSettings = new Lazy<ClientConfiguration>(() =>
-            new ClientConfiguration("https://api.tidalhifi.com/v1", "TIDAL_ANDROID/680 okhttp/3.3.1",
+            new ClientConfiguration("https://api.tidalhifi.com/v1", null,
                 "kgsOOmYk3zShYrNP", DefaultClientUniqueKey, "1.12.2", "US"));
 
         public static ClientConfiguration Default

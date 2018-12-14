@@ -10,7 +10,7 @@ using System.Net.Http;
 
 namespace OpenTidl.Models.Base
 {
-    public class WebStreamModel
+    public class WebStreamModel : IDisposable
     {
         #region properties
 
@@ -41,6 +41,7 @@ namespace OpenTidl.Models.Base
                     var model = new WebStreamModel();
                     model.ContentLength = response.Content.Headers.ContentLength.Value;
                     model.Stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+                    return model;
                 }
             }
             catch { }
@@ -54,5 +55,13 @@ namespace OpenTidl.Models.Base
         }
 
         #endregion
+
+
+
+
+        public void Dispose()
+        {
+            this.Stream?.Dispose();
+        }
     }
 }

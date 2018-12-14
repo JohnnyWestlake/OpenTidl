@@ -36,7 +36,6 @@ namespace OpenTidl.Transport
         #region properties
 
         internal String ApiEndpoint { get; private set; }
-        internal String UserAgent { get; private set; }
         internal KeyValuePair<String, String>[] Headers { get; private set; }
 
         #endregion
@@ -64,7 +63,7 @@ namespace OpenTidl.Transport
                 response = await client.SendAsync(req).ConfigureAwait(false);
 
                 var str = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                return new RestResponse<T>(str, (Int32)response.StatusCode, response.Headers.ETag.Tag);
+                return new RestResponse<T>(str, (Int32)response.StatusCode, response.Headers.ETag?.Tag);
 
             }
             //catch (HttpRequestException webEx)
@@ -108,7 +107,6 @@ namespace OpenTidl.Transport
         private HttpRequestMessage CreateRequest(String url, String method, KeyValuePair<String, String>[] extraHeaders)
         {
             var req = new HttpRequestMessage(new HttpMethod(method), url);
-            req.Headers.UserAgent.ParseAdd(this.UserAgent);
             
             if (extraHeaders != null)
             {
@@ -128,7 +126,15 @@ namespace OpenTidl.Transport
             this.ApiEndpoint = apiEndpoint ?? "";
 
             client = new HttpClient();
-            client.DefaultRequestHeaders.UserAgent.ParseAdd(userAgent);
+            if (!string.IsNullOrWhiteSpace(userAgent))
+            {
+                client.DefaultRequestHeaders.UserAgent.ParseAdd(userAgent);
+            }
+
+            client.DefaultRequestHeaders.AcceptEncoding.ParseAdd("gzip");
+            client.DefaultRequestHeaders.AcceptEncoding.ParseAdd("br");
+            client.DefaultRequestHeaders.AcceptEncoding.ParseAdd("defalte");
+
             if (headers != null)
             {
                 foreach (var h in headers)

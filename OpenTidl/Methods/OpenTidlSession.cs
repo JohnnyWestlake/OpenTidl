@@ -206,6 +206,18 @@ namespace OpenTidl.Methods
                 }, null, "GET"));
         }
 
+        public async Task<AssetModel> GetTrackAssetUrlAsync(int trackId)
+        {
+            return HandleResponse(await RestClient.ProcessAsync<AssetModel>(
+                RestUtility.FormatUrl("/tracks/{id}/urlpostpaywall", new { id = trackId }), new
+                {
+                    assetpresentation = "FULL",
+                    audioquality = "HI_RES",
+                    urlusagemode = "STREAM"
+                }, null, "GET"));
+            //tracks/98068670/urlpostpaywall?assetpresentation=FULL&audioquality=HI_RES&urlusagemode=STREAM
+        }
+
         public async Task<StreamUrlModel> GetTrackOfflineUrlAsync(Int32 trackId, SoundQuality soundQuality)
         {
             return HandleResponse(await RestClient.ProcessAsync<StreamUrlModel>(
@@ -487,7 +499,7 @@ namespace OpenTidl.Methods
         {
             this.OpenTidlClient = client;
             this.LoginResult = loginModel;
-            this.RestClient = new RestClient(client.Configuration.ApiEndpoint, client.Configuration.UserAgent, Header("X-Tidal-SessionId", loginModel?.SessionId ?? ""));
+            this.RestClient = new RestClient(client.Configuration.ApiEndpoint, client.Configuration.UserAgent, Header("X-Tidal-SessionId", loginModel?.SessionId ?? ""), Header("X-Tidal-Token", client.Configuration.Token));
         }
 
         #endregion

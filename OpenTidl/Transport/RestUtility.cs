@@ -42,7 +42,7 @@ namespace OpenTidl.Transport
             if (data == null)
                 return null;
             return data.GetType().GetProperties().Select(
-                o => new KeyValuePair<string, string>(WebUtility.UrlEncode(o.Name), FormEncode(o.GetValue(data)))).ToList();
+                o => new KeyValuePair<string, string>(o.Name, DataString(o.GetValue(data)))).ToList();
         }
 
         private static String FormEncode(Object value)
@@ -50,6 +50,11 @@ namespace OpenTidl.Transport
             if (value == null)
                 return String.Empty;
             return WebUtility.UrlEncode(value.ToString());
+        }
+
+        private static String DataString(Object value)
+        {
+            return value?.ToString() ?? string.Empty;
         }
 
         internal static String FormatUrl(String format, Object data)
