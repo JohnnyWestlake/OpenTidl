@@ -37,10 +37,7 @@ namespace OpenTidl
             return GetAlbumCoverAsync(model.Cover, model.Id, size);
         }
 
-        /// <summary>
-        /// Helper method to retrieve a stream with an album cover image
-        /// </summary>
-        public Task<WebStreamModel> GetAlbumCoverAsync(String cover, Int32 albumId, AlbumCoverSize size)
+        public static string GetAlbumCoverUrl(String cover, Int32 albumId, AlbumCoverSize size)
         {
             var w = 750;
             var h = 750;
@@ -51,6 +48,16 @@ namespace OpenTidl
                 url = String.Format("http://resources.wimpmusic.com/images/{0}/{1}x{2}.jpg", cover.Replace('-', '/'), w, h);
             else
                 url = String.Format("http://images.tidalhifi.com/im/im?w={1}&h={2}&albumid={0}&noph", albumId, w, h);
+
+            return url;
+        }
+
+        /// <summary>
+        /// Helper method to retrieve a stream with an album cover image
+        /// </summary>
+        public Task<WebStreamModel> GetAlbumCoverAsync(String cover, Int32 albumId, AlbumCoverSize size)
+        {
+            string url = GetAlbumCoverUrl(cover, albumId, size);
             return RestClient.GetWebStreamModelAsync(url);
         }
 

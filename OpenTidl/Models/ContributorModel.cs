@@ -31,8 +31,14 @@ namespace OpenTidl.Models
     [DataContract]
     public class ContributorModel : ModelBase
     {
+        [DataMember(Name = "id")]
+        public int Id { get; set; }
+
         [DataMember(Name = "name")]
         public String Name { get; private set; }
+
+        [DataMember(Name = "type")]
+        public String Type { get; private set; }
 
         [IgnoreDataMember]
         public ContributorRole Role { get; private set; }

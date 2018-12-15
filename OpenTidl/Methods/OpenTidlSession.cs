@@ -300,7 +300,7 @@ namespace OpenTidl.Methods
             return HandleResponse(await RestClient.ProcessAsync<JsonList<JsonListItem<AlbumModel>>>(
                 RestUtility.FormatUrl("/users/{userId}/favorites/albums", new { userId = UserId }), new
                 {
-                    limit = limit,
+                    limit,
                     sessionId = SessionId,
                     countryCode = CountryCode
                 }, null, "GET"));
@@ -311,7 +311,7 @@ namespace OpenTidl.Methods
             return HandleResponse(await RestClient.ProcessAsync<JsonList<JsonListItem<ArtistModel>>>(
                 RestUtility.FormatUrl("/users/{userId}/favorites/artists", new { userId = UserId }), new
                 {
-                    limit = limit,
+                    limit,
                     sessionId = SessionId,
                     countryCode = CountryCode
                 }, null, "GET"));

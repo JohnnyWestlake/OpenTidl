@@ -73,6 +73,18 @@ namespace OpenTidl
                 }, null, "GET"));
         }
 
+        public async Task<JsonList<CreditLink>> GetAlbumTracksWithCreditsAsync(Int32 albumId, int offset = 0, int limit = 100)
+        {
+            return HandleResponse(await RestClient.ProcessAsync<JsonList<CreditLink>>(
+                RestUtility.FormatUrl("/albums/{id}/items/credits", new { id = albumId }), new
+                {
+                    replace = true,
+                    offset,
+                    limit,
+                    countryCode = GetCountryCode()
+                }, null, "GET"));
+        }
+
         public async Task<AlbumReviewModel> GetAlbumReviewAsync(Int32 albumId)
         {
             return HandleResponse(await RestClient.ProcessAsync<AlbumReviewModel>(
