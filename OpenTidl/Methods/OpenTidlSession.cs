@@ -295,24 +295,36 @@ namespace OpenTidl.Methods
 
         #region user favorites methods
 
-        public async Task<JsonList<JsonListItem<AlbumModel>>> GetFavoriteAlbumsAsync(Int32 limit = 9999)
+        public async Task<JsonList<JsonListItem<AlbumModel>>> GetFavoriteAlbumsAsync(
+            int offset = 0,
+            int limit = 100,
+            SortOrder order = SortOrder.DATE,
+            SortDirection direction = SortDirection.DESC)
         {
             return HandleResponse(await RestClient.ProcessAsync<JsonList<JsonListItem<AlbumModel>>>(
                 RestUtility.FormatUrl("/users/{userId}/favorites/albums", new { userId = UserId }), new
                 {
+                    offset,
                     limit,
-                    sessionId = SessionId,
+                    order = order.ToString("F"),
+                    orderDirection = direction.ToString("F"),
                     countryCode = CountryCode
                 }, null, "GET"));
         }
 
-        public async Task<JsonList<JsonListItem<ArtistModel>>> GetFavoriteArtistsAsync(Int32 limit = 9999)
+        public async Task<JsonList<JsonListItem<ArtistModel>>> GetFavoriteArtistsAsync(
+            int offset = 0,
+            int limit = 100,
+            SortOrder order = SortOrder.DATE,
+            SortDirection direction = SortDirection.DESC)
         {
             return HandleResponse(await RestClient.ProcessAsync<JsonList<JsonListItem<ArtistModel>>>(
                 RestUtility.FormatUrl("/users/{userId}/favorites/artists", new { userId = UserId }), new
                 {
+                    offset,
                     limit,
-                    sessionId = SessionId,
+                    order = order.ToString("F"),
+                    orderDirection = direction.ToString("F"),
                     countryCode = CountryCode
                 }, null, "GET"));
         }
@@ -328,13 +340,19 @@ namespace OpenTidl.Methods
                 }, null, "GET"));
         }
 
-        public async Task<JsonList<JsonListItem<TrackModel>>> GetFavoriteTracksAsync(Int32 limit = 9999)
+        public async Task<JsonList<JsonListItem<TrackModel>>> GetFavoriteTracksAsync(
+            int offset = 0, 
+            int limit = 100, 
+            SortOrder order = SortOrder.DATE,
+            SortDirection direction = SortDirection.DESC)
         {
             return HandleResponse(await RestClient.ProcessAsync<JsonList<JsonListItem<TrackModel>>>(
                 RestUtility.FormatUrl("/users/{userId}/favorites/tracks", new { userId = UserId }), new
                 {
-                    limit = limit,
-                    sessionId = SessionId,
+                    offset,
+                    limit,
+                    order = order.ToString("F"),
+                    orderDirection = direction.ToString("F"),
                     countryCode = CountryCode
                 }, null, "GET"));
         }
@@ -346,8 +364,10 @@ namespace OpenTidl.Methods
                 {
                     sessionId = SessionId,
                     countryCode = CountryCode
-                }, new {
-                    albumId = albumId
+                }, 
+                new
+                {
+                    albumId
                 }, "POST"));
         }
 
@@ -360,7 +380,7 @@ namespace OpenTidl.Methods
                     countryCode = CountryCode
                 }, new
                 {
-                    artistId = artistId
+                    artistId
                 }, "POST"));
         }
 
@@ -386,7 +406,7 @@ namespace OpenTidl.Methods
                     countryCode = CountryCode
                 }, new
                 {
-                    trackId = trackId
+                    trackId
                 }, "POST"));
         }
 
@@ -396,7 +416,7 @@ namespace OpenTidl.Methods
                 RestUtility.FormatUrl("/users/{userId}/favorites/albums/{albumId}", new 
                 { 
                     userId = UserId,
-                    albumId = albumId
+                    albumId
                 }), new
                 {
                     sessionId = SessionId,
@@ -410,7 +430,7 @@ namespace OpenTidl.Methods
                 RestUtility.FormatUrl("/users/{userId}/favorites/artists/{artistId}", new
                 {
                     userId = UserId,
-                    artistId = artistId
+                    artistId
                 }), new
                 {
                     sessionId = SessionId,
@@ -438,7 +458,7 @@ namespace OpenTidl.Methods
                 RestUtility.FormatUrl("/users/{userId}/favorites/tracks/{trackId}", new
                 {
                     userId = UserId,
-                    trackId = trackId
+                    trackId
                 }), new
                 {
                     sessionId = SessionId,

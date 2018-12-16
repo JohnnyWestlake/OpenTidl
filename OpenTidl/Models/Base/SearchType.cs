@@ -28,11 +28,11 @@ namespace OpenTidl.Models.Base
     {
         #region properties
 
-        public Boolean Albums { get; private set; }
-        public Boolean Artists { get; private set; }
-        public Boolean Playlists { get; private set; }
-        public Boolean Tracks { get; private set; }
-        public Boolean Videos { get; private set; }
+        public Boolean Albums { get; }
+        public Boolean Artists { get; }
+        public Boolean Playlists { get; }
+        public Boolean Tracks { get; }
+        public Boolean Videos { get; }
 
         #endregion
 
@@ -55,53 +55,18 @@ namespace OpenTidl.Models.Base
 
         #region construction
 
-        public static SearchType ALL
-        {
-            get
-            {
-                return new SearchType(true, true, true, true, true);
-            }
-        }
+        public static SearchType ALL => new SearchType(true, true, true, true, true);
 
-        public static SearchType ALBUMS
-        {
-            get
-            {
-                return new SearchType(true, false, false, false, false);
-            }
-        }
+        public static SearchType ALBUMS => new SearchType(true, false, false, false, false);
 
-        public static SearchType ARTISTS
-        {
-            get
-            {
-                return new SearchType(false, true, false, false, false);
-            }
-        }
+        public static SearchType ARTISTS => new SearchType(false, true, false, false, false);
 
-        public static SearchType PLAYLISTS
-        {
-            get
-            {
-                return new SearchType(false, false, true, false, false);
-            }
-        }
+        public static SearchType PLAYLISTS => new SearchType(false, false, true, false, false);
 
-        public static SearchType TRACKS
-        {
-            get
-            {
-                return new SearchType(false, false, false, true, false);
-            }
-        }
+        public static SearchType TRACKS => new SearchType(false, false, false, true, false);
 
-        public static SearchType VIDEOS
-        {
-            get
-            {
-                return new SearchType(false, false, false, false, true);
-            }
-        }
+        public static SearchType VIDEOS => new SearchType(false, false, false, false, true);
+
 
         public static SearchType Select(Boolean albums, Boolean artists, Boolean playlists, Boolean tracks, Boolean videos)
         {

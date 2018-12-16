@@ -86,8 +86,7 @@ namespace OpenTidl.Transport
         {
             if (String.IsNullOrEmpty(value))
                 return null;
-            DateTime date;
-            if (DateTime.TryParse(value, out date))
+            if (DateTime.TryParse(value, out DateTime date))
                 return date;
             return null;
         }

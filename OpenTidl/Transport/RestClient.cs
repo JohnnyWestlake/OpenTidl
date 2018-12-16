@@ -132,7 +132,6 @@ namespace OpenTidl.Transport
             }
 
             client.DefaultRequestHeaders.AcceptEncoding.ParseAdd("gzip");
-            client.DefaultRequestHeaders.AcceptEncoding.ParseAdd("br");
             client.DefaultRequestHeaders.AcceptEncoding.ParseAdd("defalte");
 
             if (headers != null)

@@ -66,6 +66,12 @@ namespace OpenTidl.Models
         [DataMember(Name = "volumeNumber")]
         public Int32 VolumeNumber { get; private set; }
 
+        [DataMember(Name = "replayGain")]
+        public double ReplayGain { get; private set; }
+
+        [DataMember(Name = "peak")]
+        public double ReplayGainPeak { get; private set; }
+
 
         [DataMember(Name = "url")]
         public String Url { get; private set; }

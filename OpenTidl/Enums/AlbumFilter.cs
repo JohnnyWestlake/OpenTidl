@@ -22,6 +22,7 @@ namespace OpenTidl.Enums
 {
     public enum AlbumFilter
     {
+        ALL,
         ALBUMS,
         COMPILATIONS,
         EPSANDSINGLES
