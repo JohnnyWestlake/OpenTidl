@@ -15,23 +15,28 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with OpenTidl.  If not, see <http://www.gnu.org/licenses/>.
+
+    --- 
+
+    Modified 2019 J. Westlake
 */
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Net;
-using System.Threading;
-using System.IO;
 using OpenTidl.Models.Base;
-using System.Runtime.Serialization;
 using System.Net.Http;
-using System.Net.Http.Headers;
 
 namespace OpenTidl.Transport
 {
-    internal class RestClient
+    public interface IRestClient
+    {
+        Task<RestResponse<T>> ProcessAsync<T>(String path, Object query, Object request, String method, params (string, string)[] extraHeaders) where T : ModelBase;
+        Task<WebStreamModel> GetWebStreamModelAsync(String url);
+    }
+
+    internal class RestClient : IRestClient
     {
         #region properties
 
@@ -43,14 +48,13 @@ namespace OpenTidl.Transport
 
         #region methods
 
-        HttpClient client { get; }
+        HttpClient _client { get; }
 
-        internal async Task<RestResponse<T>> ProcessAsync<T>(String path, Object query, Object request, String method, params KeyValuePair<String, String>[] extraHeaders) where T : ModelBase
+        public async Task<RestResponse<T>> ProcessAsync<T>(String path, Object query, Object request, String method, params (String, String)[] extraHeaders) where T : ModelBase
         {
             var encoding = new UTF8Encoding(false);
             var queryString = RestUtility.GetFormEncodedString(query);
-            var url = String.IsNullOrEmpty(queryString) ? String.Format("{0}{1}", ApiEndpoint, path) : 
-                String.Format("{0}{1}?{2}", ApiEndpoint, path, queryString);
+            var url = String.IsNullOrEmpty(queryString) ? $"{ApiEndpoint}{path}" : $"{ApiEndpoint}{path}?{queryString}";
             var req = CreateRequest(url, method, extraHeaders);
             if (request != null)
             {
@@ -60,11 +64,9 @@ namespace OpenTidl.Transport
             HttpResponseMessage response;
             try
             {
-                response = await client.SendAsync(req).ConfigureAwait(false);
-
+                response = await _client.SendAsync(req).ConfigureAwait(false);
                 var str = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 return new RestResponse<T>(str, (Int32)response.StatusCode, response.Headers.ETag?.Tag);
-
             }
             //catch (HttpRequestException webEx)
             //{
@@ -76,26 +78,12 @@ namespace OpenTidl.Transport
             }
         }
 
-        internal async Task<HttpResponseMessage> GetWebResponseAsync(String url)
+        public async Task<WebStreamModel> GetWebStreamModelAsync(String url)
         {
             var req = CreateRequest(url, "GET", null);
             try
             {
-                var resp = await client.SendAsync(req).ConfigureAwait(false);
-                return resp;
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        internal async Task<WebStreamModel> GetWebStreamModelAsync(String url)
-        {
-            var req = CreateRequest(url, "GET", null);
-            try
-            {
-                var resp = await client.SendAsync(req).ConfigureAwait(false);
+                var resp = await _client.SendAsync(req).ConfigureAwait(false);
                 return await WebStreamModel.CreateAsync(resp).ConfigureAwait(false);
             }
             catch
@@ -104,7 +92,7 @@ namespace OpenTidl.Transport
             }
         }
 
-        private HttpRequestMessage CreateRequest(String url, String method, KeyValuePair<String, String>[] extraHeaders)
+        private HttpRequestMessage CreateRequest(String url, String method, (String Key, String Value)[] extraHeaders)
         {
             var req = new HttpRequestMessage(new HttpMethod(method), url);
             
@@ -121,23 +109,23 @@ namespace OpenTidl.Transport
 
         #region construction
 
-        internal RestClient(String apiEndpoint, String userAgent, params KeyValuePair<String, String>[] headers)
+        public RestClient(String apiEndpoint, String userAgent, params KeyValuePair<String, String>[] headers)
         {
             this.ApiEndpoint = apiEndpoint ?? "";
 
-            client = new HttpClient();
+            _client = new HttpClient();
             if (!string.IsNullOrWhiteSpace(userAgent))
             {
-                client.DefaultRequestHeaders.UserAgent.ParseAdd(userAgent);
+                _client.DefaultRequestHeaders.UserAgent.ParseAdd(userAgent);
             }
 
-            client.DefaultRequestHeaders.AcceptEncoding.ParseAdd("gzip");
-            client.DefaultRequestHeaders.AcceptEncoding.ParseAdd("defalte");
+            _client.DefaultRequestHeaders.AcceptEncoding.ParseAdd("gzip");
+            _client.DefaultRequestHeaders.AcceptEncoding.ParseAdd("defalte");
 
             if (headers != null)
             {
                 foreach (var h in headers)
-                    client.DefaultRequestHeaders.TryAddWithoutValidation(h.Key, h.Value);
+                    _client.DefaultRequestHeaders.TryAddWithoutValidation(h.Key, h.Value);
             }
         }
 

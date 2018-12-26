@@ -32,142 +32,151 @@ namespace OpenTidl.Methods
     {
         #region properties
 
-        private OpenTidlClient OpenTidlClient { get; set; }
-        //private RestClient RestClient { get { return OpenTidlClient.RestClient; } }
-        private RestClient RestClient { get; set; }
+        private OpenTidlClient _tidalClient { get; }
+        private IRestClient _restClient { get; }
+
+        private (string Key, string Value)[] _headers { get; }
 
         public LoginModel LoginResult { get; private set; }
 
         //FIXME: Throw error if empty
-        public String SessionId { get { return LoginResult != null ? LoginResult.SessionId : null; } }
-        public Int32 UserId { get { return LoginResult != null ? LoginResult.UserId : 0; } }
-        public String CountryCode { get { return LoginResult != null ? LoginResult.CountryCode : null; } }
+        public String SessionId     => LoginResult?.SessionId;
+        public Int32 UserId         => LoginResult != null ? LoginResult.UserId : 0;
+        public String CountryCode   => LoginResult?.CountryCode;
 
         #endregion
 
 
         #region opentidl methods
-        
+
 
         #region logout methods
 
         public async Task<EmptyModel> LogoutAsync()
         {
-            var result = await RestClient.ProcessAsync<EmptyModel>("/logout", new
+            var result = await _restClient.ProcessAsync<EmptyModel>("/logout", new
             {
-                sessionId = SessionId,
                 countryCode = CountryCode
-            }, new { }, "POST");
+            }, new { }, "POST", _headers);
 
             if (result == null || result.Exception == null)
                 this.LoginResult = null; //Clear session
+
             return HandleResponse(result);
         }
 
         #endregion
+
+        private (string, string)[] Headers(params (string, string)[] headers)
+        {
+            if (headers == null || headers.Length == 0)
+                return _headers;
+
+            List<(string, string)> items = new List<(string, string)>(_headers);
+            items.AddRange(headers);
+            return items.ToArray();
+        }
+
+        private (string, string)[] Headers(string key, string value)
+        {
+            return new List<(string, string)>(_headers) { (key, value) }.ToArray();
+        }
 
 
         #region playlist methods
 
         public async Task<PlaylistModel> GetPlaylistAsync(String playlistUuid)
         {
-            return HandleResponse(await RestClient.ProcessAsync<PlaylistModel>(
+            return HandleResponse(await _restClient.ProcessAsync<PlaylistModel>(
                 RestUtility.FormatUrl("/playlists/{uuid}", new { uuid = playlistUuid }), new
                 {
-                    sessionId = SessionId,
                     countryCode = CountryCode
-                }, null, "GET"));
+                }, null, "GET", _headers));
         }
 
-        public async Task<JsonList<TrackModel>> GetPlaylistTracksAsync(String playlistUuid, Int32 offset = 0, Int32 limit = 9999)
+        public async Task<JsonList<TrackModel>> GetPlaylistTracksAsync(String playlistUuid, Int32 offset = 0, Int32 limit = OpenTidlConstants.DEFAULT_LIMIT)
         {
-            return HandleResponse(await RestClient.ProcessAsync<JsonList<TrackModel>>(
+            return HandleResponse(await _restClient.ProcessAsync<JsonList<TrackModel>>(
                 RestUtility.FormatUrl("/playlists/{uuid}/tracks", new { uuid = playlistUuid }), new
                 {
-                    offset = offset,
-                    limit = limit,
-                    sessionId = SessionId,
+                    offset,
+                    limit,
                     countryCode = CountryCode
-                }, null, "GET"));
+                }, null, "GET", _headers));
         }
 
         public async Task<EmptyModel> AddPlaylistTracksAsync(String playlistUuid, String playlistETag, IEnumerable<Int32> trackIds, Int32 toIndex = 0)
         {
-            return HandleResponse(await RestClient.ProcessAsync<EmptyModel>(
+            return HandleResponse(await _restClient.ProcessAsync<EmptyModel>(
                 RestUtility.FormatUrl("/playlists/{uuid}/tracks", new { uuid = playlistUuid }), new
                 {
-                    sessionId = SessionId,
                     countryCode = CountryCode
                 }, new
                 {
                     trackIds = String.Join(",", trackIds),
-                    toIndex = toIndex
+                    toIndex
                 }, "POST",
-                Header("If-None-Match", playlistETag)));
+                Headers("If-None-Match", playlistETag)));
         }
 
         public async Task<EmptyModel> DeletePlaylistTracksAsync(String playlistUuid, String playlistETag, IEnumerable<Int32> indices)
         {
-            return HandleResponse(await RestClient.ProcessAsync<EmptyModel>(
+            return HandleResponse(await _restClient.ProcessAsync<EmptyModel>(
                 RestUtility.FormatUrl("/playlists/{uuid}/tracks/{indices}", new
                 {
                     uuid = playlistUuid,
                     indices = String.Join(",", indices)
                 }), new
                 {
-                    sessionId = SessionId,
                     countryCode = CountryCode
                 }, null, "DELETE",
-                Header("If-None-Match", playlistETag)));
+                Headers("If-None-Match", playlistETag)));
         }
 
         public async Task<EmptyModel> DeletePlaylistAsync(String playlistUuid, String playlistETag)
         {
-            return HandleResponse(await RestClient.ProcessAsync<EmptyModel>(
+            return HandleResponse(await _restClient.ProcessAsync<EmptyModel>(
                 RestUtility.FormatUrl("/playlists/{uuid}", new
                 {
                     uuid = playlistUuid
                 }), new
                 {
-                    sessionId = SessionId,
                     countryCode = CountryCode
                 }, null, "DELETE",
-                Header("If-None-Match", playlistETag)));
+                Headers("If-None-Match", playlistETag)));
         }
 
         public async Task<EmptyModel> MovePlaylistTracksAsync(String playlistUuid, String playlistETag, IEnumerable<Int32> indices, Int32 toIndex = 0)
         {
-            return HandleResponse(await RestClient.ProcessAsync<EmptyModel>(
+            return HandleResponse(await _restClient.ProcessAsync<EmptyModel>(
                 RestUtility.FormatUrl("/playlists/{uuid}/tracks/{indices}", new
                 {
                     uuid = playlistUuid,
                     indices = String.Join(",", indices)
                 }), new
                 {
-                    sessionId = SessionId,
                     countryCode = CountryCode
                 }, new
                 {
-                    toIndex = toIndex
+                    toIndex
                 }, "POST",
-                Header("If-None-Match", playlistETag)));
+                Headers("If-None-Match", playlistETag)));
         }
 
         public async Task<EmptyModel> UpdatePlaylistAsync(String playlistUuid, String playlistETag, String title)
         {
-            return HandleResponse(await RestClient.ProcessAsync<EmptyModel>(
+            return HandleResponse(await _restClient.ProcessAsync<EmptyModel>(
                 RestUtility.FormatUrl("/playlists/{uuid}", new
                 {
                     uuid = playlistUuid
                 }), new
                 {
-                    sessionId = SessionId,
                     countryCode = CountryCode
                 }, new
                 {
-                    title = title
+                    title
                 }, "POST",
-                Header("If-None-Match", playlistETag)));
+                Headers("If-None-Match", playlistETag)));
         }
 
         #endregion
@@ -177,16 +186,16 @@ namespace OpenTidl.Methods
 
         public async Task<ClientModel> GetClientAsync()
         {
-            return HandleResponse(await RestClient.ProcessAsync<ClientModel>(
+            return HandleResponse(await _restClient.ProcessAsync<ClientModel>(
                 RestUtility.FormatUrl("/sessions/{sessionId}/client", new { sessionId = SessionId }),
-                null, null, "GET"));
+                null, null, "GET", _headers));
         }
 
         public async Task<SessionModel> GetSessionAsync()
         {
-            return HandleResponse(await RestClient.ProcessAsync<SessionModel>(
+            return HandleResponse(await _restClient.ProcessAsync<SessionModel>(
                 RestUtility.FormatUrl("/sessions/{sessionId}", new { sessionId = SessionId }),
-                null, null, "GET"));
+                null, null, "GET", _headers));
         }
 
         #endregion
@@ -196,37 +205,35 @@ namespace OpenTidl.Methods
 
         public async Task<StreamUrlModel> GetTrackStreamUrlAsync(Int32 trackId, SoundQuality soundQuality, String playlistUuid)
         {
-            return HandleResponse(await RestClient.ProcessAsync<StreamUrlModel>(
+            return HandleResponse(await _restClient.ProcessAsync<StreamUrlModel>(
                 RestUtility.FormatUrl("/tracks/{id}/streamUrl", new { id = trackId }), new
                 {
-                    soundQuality = soundQuality,
-                    playlistUuid = playlistUuid,
-                    sessionId = SessionId,
+                    soundQuality,
+                    playlistUuid,
                     countryCode = CountryCode
-                }, null, "GET"));
+                }, null, "GET", _headers));
         }
 
         public async Task<AssetModel> GetTrackAssetUrlAsync(int trackId)
         {
-            return HandleResponse(await RestClient.ProcessAsync<AssetModel>(
+            return HandleResponse(await _restClient.ProcessAsync<AssetModel>(
                 RestUtility.FormatUrl("/tracks/{id}/urlpostpaywall", new { id = trackId }), new
                 {
                     assetpresentation = "FULL",
                     audioquality = "HI_RES",
                     urlusagemode = "STREAM"
-                }, null, "GET"));
+                }, null, "GET", _headers));
             //tracks/98068670/urlpostpaywall?assetpresentation=FULL&audioquality=HI_RES&urlusagemode=STREAM
         }
 
         public async Task<StreamUrlModel> GetTrackOfflineUrlAsync(Int32 trackId, SoundQuality soundQuality)
         {
-            return HandleResponse(await RestClient.ProcessAsync<StreamUrlModel>(
+            return HandleResponse(await _restClient.ProcessAsync<StreamUrlModel>(
                 RestUtility.FormatUrl("/tracks/{id}/offlineUrl", new { id = trackId }), new
                 {
-                    soundQuality = soundQuality,
-                    sessionId = SessionId,
+                    soundQuality,
                     countryCode = CountryCode
-                }, null, "GET"));
+                }, null, "GET", _headers));
         }
 
         #endregion
@@ -234,60 +241,55 @@ namespace OpenTidl.Methods
 
         #region user methods
 
-        public async Task<JsonList<ClientModel>> GetUserClientsAsync(ClientFilter filter, Int32 limit = 9999)
+        public async Task<JsonList<ClientModel>> GetUserClientsAsync(ClientFilter filter, Int32 limit = OpenTidlConstants.DEFAULT_LIMIT)
         {
-            return HandleResponse(await RestClient.ProcessAsync<JsonList<ClientModel>>(
+            return HandleResponse(await _restClient.ProcessAsync<JsonList<ClientModel>>(
                 RestUtility.FormatUrl("/users/{userId}/clients", new { userId = UserId }), new
                 {
                     filter = filter.ToString(),
-                    limit = limit,
-                    sessionId = SessionId,
+                    limit,
                     countryCode = CountryCode
-                }, null, "GET"));
+                }, null, "GET", _headers));
         }
 
-        public async Task<JsonList<PlaylistModel>> GetUserPlaylistsAsync(Int32 limit = 9999)
+        public async Task<JsonList<PlaylistModel>> GetUserPlaylistsAsync(Int32 limit = OpenTidlConstants.DEFAULT_LIMIT)
         {
-            return HandleResponse(await RestClient.ProcessAsync<JsonList<PlaylistModel>>(
+            return HandleResponse(await _restClient.ProcessAsync<JsonList<PlaylistModel>>(
                 RestUtility.FormatUrl("/users/{userId}/playlists", new { userId = UserId }), new
                 {
-                    limit = limit,
-                    sessionId = SessionId,
+                    limit,
                     countryCode = CountryCode
-                }, null, "GET"));
+                }, null, "GET", _headers));
         }
 
         public async Task<PlaylistModel> CreateUserPlaylistAsync(String title)
         {
-            return HandleResponse(await RestClient.ProcessAsync<PlaylistModel>(
+            return HandleResponse(await _restClient.ProcessAsync<PlaylistModel>(
                 RestUtility.FormatUrl("/users/{userId}/playlists", new { userId = UserId }), new
                 {
-                    sessionId = SessionId,
                     countryCode = CountryCode
                 }, new
                 {
-                    title = title
-                }, "POST"));
+                    title
+                }, "POST", _headers));
         }
 
         public async Task<UserSubscriptionModel> GetUserSubscriptionAsync()
         {
-            return HandleResponse(await RestClient.ProcessAsync<UserSubscriptionModel>(
+            return HandleResponse(await _restClient.ProcessAsync<UserSubscriptionModel>(
                 RestUtility.FormatUrl("/users/{userId}/subscription", new { userId = UserId }), new
                 {
-                    sessionId = SessionId,
                     countryCode = CountryCode
-                }, null, "GET"));
+                }, null, "GET", _headers));
         }
 
         public async Task<UserModel> GetUserAsync()
         {
-            return HandleResponse(await RestClient.ProcessAsync<UserModel>(
+            return HandleResponse(await _restClient.ProcessAsync<UserModel>(
                 RestUtility.FormatUrl("/users/{userId}", new { userId = UserId }), new
                 {
-                    sessionId = SessionId,
                     countryCode = CountryCode
-                }, null, "GET"));
+                }, null, "GET", _headers));
         }
 
         #endregion
@@ -301,7 +303,7 @@ namespace OpenTidl.Methods
             SortOrder order = SortOrder.DATE,
             SortDirection direction = SortDirection.DESC)
         {
-            return HandleResponse(await RestClient.ProcessAsync<JsonList<JsonListItem<AlbumModel>>>(
+            return HandleResponse(await _restClient.ProcessAsync<JsonList<JsonListItem<AlbumModel>>>(
                 RestUtility.FormatUrl("/users/{userId}/favorites/albums", new { userId = UserId }), new
                 {
                     offset,
@@ -309,7 +311,7 @@ namespace OpenTidl.Methods
                     order = order.ToString("F"),
                     orderDirection = direction.ToString("F"),
                     countryCode = CountryCode
-                }, null, "GET"));
+                }, null, "GET", _headers));
         }
 
         public async Task<JsonList<JsonListItem<ArtistModel>>> GetFavoriteArtistsAsync(
@@ -318,7 +320,7 @@ namespace OpenTidl.Methods
             SortOrder order = SortOrder.DATE,
             SortDirection direction = SortDirection.DESC)
         {
-            return HandleResponse(await RestClient.ProcessAsync<JsonList<JsonListItem<ArtistModel>>>(
+            return HandleResponse(await _restClient.ProcessAsync<JsonList<JsonListItem<ArtistModel>>>(
                 RestUtility.FormatUrl("/users/{userId}/favorites/artists", new { userId = UserId }), new
                 {
                     offset,
@@ -326,18 +328,17 @@ namespace OpenTidl.Methods
                     order = order.ToString("F"),
                     orderDirection = direction.ToString("F"),
                     countryCode = CountryCode
-                }, null, "GET"));
+                }, null, "GET", _headers));
         }
 
-        public async Task<JsonList<JsonListItem<PlaylistModel>>> GetFavoritePlaylistsAsync(Int32 limit = 9999)
+        public async Task<JsonList<JsonListItem<PlaylistModel>>> GetFavoritePlaylistsAsync(Int32 limit = OpenTidlConstants.DEFAULT_LIMIT)
         {
-            return HandleResponse(await RestClient.ProcessAsync<JsonList<JsonListItem<PlaylistModel>>>(
+            return HandleResponse(await _restClient.ProcessAsync<JsonList<JsonListItem<PlaylistModel>>>(
                 RestUtility.FormatUrl("/users/{userId}/favorites/playlists", new { userId = UserId }), new
                 {
-                    limit = limit,
-                    sessionId = SessionId,
+                    limit,
                     countryCode = CountryCode
-                }, null, "GET"));
+                }, null, "GET", _headers));
         }
 
         public async Task<JsonList<JsonListItem<TrackModel>>> GetFavoriteTracksAsync(
@@ -346,7 +347,7 @@ namespace OpenTidl.Methods
             SortOrder order = SortOrder.DATE,
             SortDirection direction = SortDirection.DESC)
         {
-            return HandleResponse(await RestClient.ProcessAsync<JsonList<JsonListItem<TrackModel>>>(
+            return HandleResponse(await _restClient.ProcessAsync<JsonList<JsonListItem<TrackModel>>>(
                 RestUtility.FormatUrl("/users/{userId}/favorites/tracks", new { userId = UserId }), new
                 {
                     offset,
@@ -354,116 +355,104 @@ namespace OpenTidl.Methods
                     order = order.ToString("F"),
                     orderDirection = direction.ToString("F"),
                     countryCode = CountryCode
-                }, null, "GET"));
+                }, null, "GET", _headers));
         }
 
         public async Task<EmptyModel> AddFavoriteAlbumAsync(Int32 albumId)
         {
-            return HandleResponse(await RestClient.ProcessAsync<EmptyModel>(
-                RestUtility.FormatUrl("/users/{userId}/favorites/albums", new { userId = UserId }), new
-                {
-                    sessionId = SessionId,
-                    countryCode = CountryCode
-                }, 
-                new
-                {
-                    albumId
-                }, "POST"));
+            return HandleResponse(await _restClient.ProcessAsync<EmptyModel>(
+                RestUtility.FormatUrl("/users/{userId}/favorites/albums", new { userId = UserId }), 
+                new { countryCode = CountryCode }, 
+                new { albumId }, 
+                "POST", _headers));
         }
 
         public async Task<EmptyModel> AddFavoriteArtistAsync(Int32 artistId)
         {
-            return HandleResponse(await RestClient.ProcessAsync<EmptyModel>(
+            return HandleResponse(await _restClient.ProcessAsync<EmptyModel>(
                 RestUtility.FormatUrl("/users/{userId}/favorites/artists", new { userId = UserId }), new
                 {
-                    sessionId = SessionId,
                     countryCode = CountryCode
                 }, new
                 {
                     artistId
-                }, "POST"));
+                }, "POST", _headers));
         }
 
         public async Task<EmptyModel> AddFavoritePlaylistAsync(String playlistUuid)
         {
-            return HandleResponse(await RestClient.ProcessAsync<EmptyModel>(
+            return HandleResponse(await _restClient.ProcessAsync<EmptyModel>(
                 RestUtility.FormatUrl("/users/{userId}/favorites/playlists", new { userId = UserId }), new
                 {
-                    sessionId = SessionId,
                     countryCode = CountryCode
                 }, new
                 {
                     uuid = playlistUuid
-                }, "POST"));
+                }, "POST", _headers));
         }
 
         public async Task<EmptyModel> AddFavoriteTrackAsync(Int32 trackId)
         {
-            return HandleResponse(await RestClient.ProcessAsync<EmptyModel>(
+            return HandleResponse(await _restClient.ProcessAsync<EmptyModel>(
                 RestUtility.FormatUrl("/users/{userId}/favorites/tracks", new { userId = UserId }), new
                 {
-                    sessionId = SessionId,
                     countryCode = CountryCode
                 }, new
                 {
                     trackId
-                }, "POST"));
+                }, "POST", _headers));
         }
 
         public async Task<EmptyModel> RemoveFavoriteAlbumAsync(Int32 albumId)
         {
-            return HandleResponse(await RestClient.ProcessAsync<EmptyModel>(
+            return HandleResponse(await _restClient.ProcessAsync<EmptyModel>(
                 RestUtility.FormatUrl("/users/{userId}/favorites/albums/{albumId}", new 
                 { 
                     userId = UserId,
                     albumId
                 }), new
                 {
-                    sessionId = SessionId,
                     countryCode = CountryCode
-                }, null, "DELETE"));
+                }, null, "DELETE", _headers));
         }
 
         public async Task<EmptyModel> RemoveFavoriteArtistAsync(Int32 artistId)
         {
-            return HandleResponse(await RestClient.ProcessAsync<EmptyModel>(
+            return HandleResponse(await _restClient.ProcessAsync<EmptyModel>(
                 RestUtility.FormatUrl("/users/{userId}/favorites/artists/{artistId}", new
                 {
                     userId = UserId,
                     artistId
                 }), new
                 {
-                    sessionId = SessionId,
                     countryCode = CountryCode
-                }, null, "DELETE"));
+                }, null, "DELETE", _headers));
         }
 
         public async Task<EmptyModel> RemoveFavoritePlaylistAsync(String playlistUuid)
         {
-            return HandleResponse(await RestClient.ProcessAsync<EmptyModel>(
+            return HandleResponse(await _restClient.ProcessAsync<EmptyModel>(
                 RestUtility.FormatUrl("/users/{userId}/favorites/playlists/{uuid}", new
                 {
                     userId = UserId,
                     uuid = playlistUuid
                 }), new
                 {
-                    sessionId = SessionId,
                     countryCode = CountryCode
-                }, null, "DELETE"));
+                }, null, "DELETE", _headers));
         }
 
         public async Task<EmptyModel> RemoveFavoriteTrackAsync(Int32 trackId)
         {
-            return HandleResponse(await RestClient.ProcessAsync<EmptyModel>(
+            return HandleResponse(await _restClient.ProcessAsync<EmptyModel>(
                 RestUtility.FormatUrl("/users/{userId}/favorites/tracks/{trackId}", new
                 {
                     userId = UserId,
                     trackId
                 }), new
                 {
-                    sessionId = SessionId,
                     countryCode = CountryCode
-                }, null, "DELETE"));
+                }, null, "DELETE", _headers));
         }
 
         #endregion
@@ -473,23 +462,22 @@ namespace OpenTidl.Methods
 
         public async Task<VideoModel> GetVideoAsync(Int32 videoId)
         {
-            return HandleResponse(await RestClient.ProcessAsync<VideoModel>(
+            return HandleResponse(await _restClient.ProcessAsync<VideoModel>(
                 RestUtility.FormatUrl("/videos/{id}", new { id = videoId }), new
                 {
-                    sessionId = SessionId,
                     countryCode = CountryCode
-                }, null, "GET"));
+                }, null, "GET", _headers));
         }
 
         public async Task<VideoStreamUrlModel> GetVideoStreamUrlAsync(Int32 videoId, VideoQuality videoQuality)
         {
-            return HandleResponse(await RestClient.ProcessAsync<VideoStreamUrlModel>(
+            return HandleResponse(await _restClient.ProcessAsync<VideoStreamUrlModel>(
                 RestUtility.FormatUrl("/videos/{id}/streamurl", new { id = videoId }), new
                 {
-                    videoQuality = videoQuality,
+                    videoQuality,
                     sessionId = SessionId,
                     countryCode = CountryCode
-                }, null, "GET"));
+                }, null, "GET", _headers));
         }
 
         #endregion
@@ -502,12 +490,7 @@ namespace OpenTidl.Methods
 
         private T HandleResponse<T>(RestResponse<T> response) where T : ModelBase
         {
-            return this.OpenTidlClient.HandleResponse(response);
-        }
-
-        private KeyValuePair<String, String> Header(String header, String value)
-        {
-            return this.OpenTidlClient.Header(header, value);
+            return this._tidalClient.HandleResponse(response);
         }
 
         #endregion
@@ -515,11 +498,12 @@ namespace OpenTidl.Methods
 
         #region construction
 
-        internal OpenTidlSession(OpenTidlClient client, LoginModel loginModel)
+        internal OpenTidlSession(OpenTidlClient client, LoginModel loginModel, IRestClient restClient)
         {
-            this.OpenTidlClient = client;
+            this._tidalClient = client;
             this.LoginResult = loginModel;
-            this.RestClient = new RestClient(client.Configuration.ApiEndpoint, client.Configuration.UserAgent, Header("X-Tidal-SessionId", loginModel?.SessionId ?? ""), Header("X-Tidal-Token", client.Configuration.Token));
+            this._restClient = restClient;
+            _headers = new (string, string)[] { ("X-Tidal-SessionId", loginModel?.SessionId) };
         }
 
         #endregion

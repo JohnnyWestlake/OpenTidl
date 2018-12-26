@@ -30,7 +30,6 @@ namespace OpenTidl
 {
     public partial class OpenTidlClient
     {
-        const int DEFAULT_LIMIT = 100;
 
         #region album methods
 
@@ -73,7 +72,7 @@ namespace OpenTidl
                 }, null, "GET"));
         }
 
-        public async Task<JsonList<CreditLink>> GetAlbumTracksWithCreditsAsync(Int32 albumId, int offset = 0, int limit = DEFAULT_LIMIT)
+        public async Task<JsonList<CreditLink>> GetAlbumTracksWithCreditsAsync(Int32 albumId, int offset = 0, int limit = OpenTidlConstants.DEFAULT_LIMIT)
         {
             return HandleResponse(await RestClient.ProcessAsync<JsonList<CreditLink>>(
                 RestUtility.FormatUrl("/albums/{id}/items/credits", new { id = albumId }), new
@@ -109,7 +108,7 @@ namespace OpenTidl
         }
 
         public async Task<JsonList<AlbumModel>> GetArtistAlbumsAsync(
-            int artistId, AlbumFilter filter, int offset = 0, int limit = DEFAULT_LIMIT)
+            int artistId, AlbumFilter filter, int offset = 0, int limit = OpenTidlConstants.DEFAULT_LIMIT)
         {
             return HandleResponse(await RestClient.ProcessAsync<JsonList<AlbumModel>>(
                 RestUtility.FormatUrl("/artists/{id}/albums", new { id = artistId }), new
@@ -121,7 +120,7 @@ namespace OpenTidl
                 }, null, "GET"));
         }
 
-        public async Task<JsonList<TrackModel>> GetRadioFromArtistAsync(Int32 artistId, Int32 offset = 0, Int32 limit = DEFAULT_LIMIT)
+        public async Task<JsonList<TrackModel>> GetRadioFromArtistAsync(Int32 artistId, Int32 offset = 0, Int32 limit = OpenTidlConstants.DEFAULT_LIMIT)
         {
             return HandleResponse(await RestClient.ProcessAsync<JsonList<TrackModel>>(
                 RestUtility.FormatUrl("/artists/{id}/radio", new { id = artistId }), new
@@ -132,7 +131,7 @@ namespace OpenTidl
                 }, null, "GET"));
         }
 
-        public async Task<JsonList<ArtistModel>> GetSimilarArtistsAsync(Int32 artistId, Int32 offset = 0, Int32 limit = DEFAULT_LIMIT)
+        public async Task<JsonList<ArtistModel>> GetSimilarArtistsAsync(Int32 artistId, Int32 offset = 0, Int32 limit = OpenTidlConstants.DEFAULT_LIMIT)
         {
             return HandleResponse(await RestClient.ProcessAsync<JsonList<ArtistModel>>(
                 RestUtility.FormatUrl("/artists/{id}/similar", new { id = artistId }), new
@@ -143,7 +142,7 @@ namespace OpenTidl
                 }, null, "GET"));
         }
 
-        public async Task<JsonList<TrackModel>> GetArtistTopTracksAsync(Int32 artistId, Int32 offset = 0, Int32 limit = DEFAULT_LIMIT)
+        public async Task<JsonList<TrackModel>> GetArtistTopTracksAsync(Int32 artistId, Int32 offset = 0, Int32 limit = OpenTidlConstants.DEFAULT_LIMIT)
         {
             return HandleResponse(await RestClient.ProcessAsync<JsonList<TrackModel>>(
                 RestUtility.FormatUrl("/artists/{id}/toptracks", new { id = artistId }), new
@@ -154,7 +153,7 @@ namespace OpenTidl
                 }, null, "GET"));
         }
 
-        public async Task<JsonList<VideoModel>> GetArtistVideosAsync(Int32 artistId, Int32 offset = 0, Int32 limit = DEFAULT_LIMIT)
+        public async Task<JsonList<VideoModel>> GetArtistVideosAsync(Int32 artistId, Int32 offset = 0, Int32 limit = OpenTidlConstants.DEFAULT_LIMIT)
         {
             return HandleResponse(await RestClient.ProcessAsync<JsonList<VideoModel>>(
                 RestUtility.FormatUrl("/artists/{id}/videos", new { id = artistId }), new
@@ -174,7 +173,7 @@ namespace OpenTidl
                 }, null, "GET"));
         }
 
-        public async Task<JsonList<LinkModel>> GetArtistLinksAsync(Int32 artistId, Int32 limit = DEFAULT_LIMIT)
+        public async Task<JsonList<LinkModel>> GetArtistLinksAsync(Int32 artistId, Int32 limit = OpenTidlConstants.DEFAULT_LIMIT)
         {
             return HandleResponse(await RestClient.ProcessAsync<JsonList<LinkModel>>(
                 RestUtility.FormatUrl("/artists/{id}/links", new { id = artistId }), new
@@ -199,7 +198,7 @@ namespace OpenTidl
         
         #region search methods
 
-        public async Task<JsonList<AlbumModel>> SearchAlbumsAsync(String query, Int32 offset = 0, Int32 limit = DEFAULT_LIMIT)
+        public async Task<JsonList<AlbumModel>> SearchAlbumsAsync(String query, Int32 offset = 0, Int32 limit = OpenTidlConstants.DEFAULT_LIMIT)
         {
             return HandleResponse(await RestClient.ProcessAsync<JsonList<AlbumModel>>(
                 "/search/albums", new
@@ -211,7 +210,7 @@ namespace OpenTidl
                 }, null, "GET"));
         }
 
-        public async Task<JsonList<ArtistModel>> SearchArtistsAsync(String query, Int32 offset = 0, Int32 limit = DEFAULT_LIMIT)
+        public async Task<JsonList<ArtistModel>> SearchArtistsAsync(String query, Int32 offset = 0, Int32 limit = OpenTidlConstants.DEFAULT_LIMIT)
         {
             return HandleResponse(await RestClient.ProcessAsync<JsonList<ArtistModel>>(
                 "/search/artists", new
@@ -223,7 +222,7 @@ namespace OpenTidl
                 }, null, "GET"));
         }
 
-        public async Task<JsonList<PlaylistModel>> SearchPlaylistsAsync(String query, Int32 offset = 0, Int32 limit = DEFAULT_LIMIT)
+        public async Task<JsonList<PlaylistModel>> SearchPlaylistsAsync(String query, Int32 offset = 0, Int32 limit = OpenTidlConstants.DEFAULT_LIMIT)
         {
             return HandleResponse(await RestClient.ProcessAsync<JsonList<PlaylistModel>>(
                 "/search/playlists", new
@@ -235,7 +234,7 @@ namespace OpenTidl
                 }, null, "GET"));
         }
 
-        public async Task<JsonList<TrackModel>> SearchTracksAsync(String query, Int32 offset = 0, Int32 limit = DEFAULT_LIMIT)
+        public async Task<JsonList<TrackModel>> SearchTracksAsync(String query, Int32 offset = 0, Int32 limit = OpenTidlConstants.DEFAULT_LIMIT)
         {
             return HandleResponse(await RestClient.ProcessAsync<JsonList<TrackModel>>(
                 "/search/tracks", new
@@ -247,7 +246,7 @@ namespace OpenTidl
                 }, null, "GET"));
         }
 
-        public async Task<JsonList<VideoModel>> SearchVideosAsync(String query, Int32 offset = 0, Int32 limit = DEFAULT_LIMIT)
+        public async Task<JsonList<VideoModel>> SearchVideosAsync(String query, Int32 offset = 0, Int32 limit = OpenTidlConstants.DEFAULT_LIMIT)
         {
             return HandleResponse(await RestClient.ProcessAsync<JsonList<VideoModel>>(
                 "/search/videos", new
@@ -259,7 +258,7 @@ namespace OpenTidl
                 }, null, "GET"));
         }
 
-        public async Task<SearchResultModel> SearchAsync(String query, SearchType types, Int32 offset = 0, Int32 limit = DEFAULT_LIMIT)
+        public async Task<SearchResultModel> SearchAsync(String query, SearchType types, Int32 offset = 0, Int32 limit = OpenTidlConstants.DEFAULT_LIMIT)
         {
             return HandleResponse(await RestClient.ProcessAsync<SearchResultModel>(
                 "/search", new
@@ -297,7 +296,7 @@ namespace OpenTidl
                 }, null, "GET"));
         }
 
-        public async Task<JsonList<TrackModel>> GetRadioFromTrackAsync(Int32 trackId, Int32 limit = 9999)
+        public async Task<JsonList<TrackModel>> GetRadioFromTrackAsync(Int32 trackId, Int32 limit = OpenTidlConstants.DEFAULT_LIMIT)
         {
             return HandleResponse(await RestClient.ProcessAsync<JsonList<TrackModel>>(
                 RestUtility.FormatUrl("/tracks/{id}/radio", new { id = trackId }), new

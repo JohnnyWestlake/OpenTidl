@@ -29,18 +29,24 @@ namespace OpenTidl
     {
         #region image methods
 
-        /// <summary>
-        /// Helper method to retrieve a stream with an album cover image
-        /// </summary>
-        public Task<WebStreamModel> GetAlbumCoverAsync(AlbumModel model, AlbumCoverSize size)
+        private static string GetPlaylistImageUrl(String image, String playlistUuid, PlaylistImageSize size)
         {
-            return GetAlbumCoverAsync(model.Cover, model.Id, size);
+            int w = 750;
+            int h = 500;
+            if (!RestUtility.ParseImageSize(size.ToString(), out w, out h))
+                throw new ArgumentException("Invalid image size", "size");
+            String url = null;
+            if (!String.IsNullOrEmpty(image))
+                url = String.Format("http://resources.wimpmusic.com/images/{0}/{1}x{2}.jpg", image.Replace('-', '/'), w, h);
+            else
+                url = String.Format("http://images.tidalhifi.com/im/im?w={1}&h={2}&uuid={0}&rows=2&cols=3&noph", playlistUuid, w, h);
+            return url;
         }
 
         public static string GetAlbumCoverUrl(String cover, Int32 albumId, AlbumCoverSize size)
         {
-            var w = 750;
-            var h = 750;
+            int w = 750;
+            int h = 750;
             if (!RestUtility.ParseImageSize(size.ToString(), out w, out h))
                 throw new ArgumentException("Invalid image size", "size");
             String url = null;
@@ -50,6 +56,43 @@ namespace OpenTidl
                 url = String.Format("http://images.tidalhifi.com/im/im?w={1}&h={2}&albumid={0}&noph", albumId, w, h);
 
             return url;
+        }
+
+        public static string GetArtistPictureUrl(String picture, Int32 artistId, ArtistPictureSize size)
+        {
+            int w = 750;
+            int h = 500;
+            if (!RestUtility.ParseImageSize(size.ToString(), out w, out h))
+                throw new ArgumentException("Invalid image size", "size");
+            String url = null;
+            if (!String.IsNullOrEmpty(picture))
+                url = String.Format("http://resources.wimpmusic.com/images/{0}/{1}x{2}.jpg", picture.Replace('-', '/'), w, h);
+            else
+                url = String.Format("http://images.tidalhifi.com/im/im?w={1}&h={2}&artistid={0}&noph", artistId, w, h);
+
+            return url;
+        }
+
+        public static string GetVideoImageUrl(String imageId, String imagePath, VideoImageSize size)
+        {
+            int w = 750;
+            int h = 500;
+            if (!RestUtility.ParseImageSize(size.ToString(), out w, out h))
+                throw new ArgumentException("Invalid image size", "size");
+            String url = null;
+            if (!String.IsNullOrEmpty(imageId))
+                url = String.Format("http://resources.wimpmusic.com/images/{0}/{1}x{2}.jpg", imageId.Replace('-', '/'), w, h);
+            else
+                url = String.Format("http://images.tidalhifi.com/im/im?w={1}&h={2}&img={0}&noph", imagePath, w, h);
+            return url;
+        }
+
+        /// <summary>
+        /// Helper method to retrieve a stream with an album cover image
+        /// </summary>
+        public Task<WebStreamModel> GetAlbumCoverAsync(AlbumModel model, AlbumCoverSize size)
+        {
+            return GetAlbumCoverAsync(model.Cover, model.Id, size);
         }
 
         /// <summary>
@@ -74,15 +117,7 @@ namespace OpenTidl
         /// </summary>
         public Task<WebStreamModel> GetArtistPictureAsync(String picture, Int32 artistId, ArtistPictureSize size)
         {
-            int w = 750;
-            int h = 500;
-            if (!RestUtility.ParseImageSize(size.ToString(), out w, out h))
-                throw new ArgumentException("Invalid image size", "size");
-            String url = null;
-            if (!String.IsNullOrEmpty(picture))
-                url = String.Format("http://resources.wimpmusic.com/images/{0}/{1}x{2}.jpg", picture.Replace('-', '/'), w, h);
-            else
-                url = String.Format("http://images.tidalhifi.com/im/im?w={1}&h={2}&artistid={0}&noph", artistId, w, h);
+            string url = GetArtistPictureUrl(picture, artistId, size);
             return RestClient.GetWebStreamModelAsync(url);
         }
 
@@ -99,15 +134,7 @@ namespace OpenTidl
         /// </summary>
         public Task<WebStreamModel> GetPlaylistImageAsync(String image, String playlistUuid, PlaylistImageSize size)
         {
-            var w = 750;
-            var h = 500;
-            if (!RestUtility.ParseImageSize(size.ToString(), out w, out h))
-                throw new ArgumentException("Invalid image size", "size");
-            String url = null;
-            if (!String.IsNullOrEmpty(image))
-                url = String.Format("http://resources.wimpmusic.com/images/{0}/{1}x{2}.jpg", image.Replace('-', '/'), w, h);
-            else
-                url = String.Format("http://images.tidalhifi.com/im/im?w={1}&h={2}&uuid={0}&rows=2&cols=3&noph", playlistUuid, w, h);
+            string url = GetPlaylistImageUrl(image, playlistUuid, size);
             return RestClient.GetWebStreamModelAsync(url);
         }
 
@@ -124,20 +151,11 @@ namespace OpenTidl
         /// </summary>
         public Task<WebStreamModel> GetVideoImageAsync(String imageId, String imagePath, VideoImageSize size)
         {
-            var w = 750;
-            var h = 500;
-            if (!RestUtility.ParseImageSize(size.ToString(), out w, out h))
-                throw new ArgumentException("Invalid image size", "size");
-            String url = null;
-            if (!String.IsNullOrEmpty(imageId))
-                url = String.Format("http://resources.wimpmusic.com/images/{0}/{1}x{2}.jpg", imageId.Replace('-', '/'), w, h);
-            else
-                url = String.Format("http://images.tidalhifi.com/im/im?w={1}&h={2}&img={0}&noph", imagePath, w, h);
+            string url = GetVideoImageUrl(imageId, imagePath, size);
             return RestClient.GetWebStreamModelAsync(url);
         }
 
         #endregion
-
 
         #region track/video methods
 

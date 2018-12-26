@@ -44,7 +44,7 @@ namespace OpenTidl
         #region properties
 
         public ClientConfiguration Configuration { get; private set; }
-        private RestClient RestClient { get; set; }
+        private IRestClient RestClient { get; set; }
 
         private String LastSessionCountryCode { get; set; }
         private String DefaultCountryCode { get { return _defaultCountryCode; } }
@@ -121,10 +121,10 @@ namespace OpenTidl
             return client;
         }
 
-        private OpenTidlClient(ClientConfiguration config)
+        private OpenTidlClient(ClientConfiguration config, IRestClient client = null)
         {
             this.Configuration = config;
-            this.RestClient = new RestClient(config.ApiEndpoint, config.UserAgent, Header("X-Tidal-Token", config.Token));
+            this.RestClient = client ?? new RestClient(config.ApiEndpoint, config.UserAgent, Header("X-Tidal-Token", config.Token));
         }
 
         #endregion

@@ -37,59 +37,46 @@ namespace OpenTidl
         {
             return new OpenTidlSession(this, HandleLoginResponse(await RestClient.ProcessAsync<LoginModel>("/login/facebook", null, new
             {
-                accessToken = accessToken,
+                accessToken,
                 token = Configuration.Token,
                 clientUniqueKey = Configuration.ClientUniqueKey,
                 clientVersion = Configuration.ClientVersion
-            }, "POST"), LoginType.Facebook));
+            }, "POST"), LoginType.Facebook), RestClient);
         }
-
-        /*[Obsolete]
-        public async Task<OpenTidlSession> LoginWithSpidToken(String accessToken, String spidUserId)
-        {
-            return new OpenTidlSession(this, HandleLoginResponse(await RestClient.Process<LoginModel>("/login/spid/token", null, new
-            {
-                accessToken = accessToken,
-                spidUserId = spidUserId,
-                token = Configuration.Token,
-                clientUniqueKey = Configuration.ClientUniqueKey,
-                clientVersion = Configuration.ClientVersion
-            }, "POST"), LoginType.Spid));
-        }*/
 
         public async Task<OpenTidlSession> LoginWithTokenAsync(String authenticationToken)
         {
             return new OpenTidlSession(this, HandleLoginResponse(await RestClient.ProcessAsync<LoginModel>("/login/token", null, new
             {
-                authenticationToken = authenticationToken,
+                authenticationToken,
                 token = Configuration.Token,
                 clientUniqueKey = Configuration.ClientUniqueKey,
                 clientVersion = Configuration.ClientVersion
-            }, "POST"), LoginType.Token));
+            }, "POST"), LoginType.Token), RestClient);
         }
 
         public async Task<OpenTidlSession> LoginWithTwitterAsync(String accessToken, String accessTokenSecret)
         {
             return new OpenTidlSession(this, HandleLoginResponse(await RestClient.ProcessAsync<LoginModel>("/login/twitter", null, new
             {
-                accessToken = accessToken,
-                accessTokenSecret = accessTokenSecret,
+                accessToken,
+                accessTokenSecret,
                 token = Configuration.Token,
                 clientUniqueKey = Configuration.ClientUniqueKey,
                 clientVersion = Configuration.ClientVersion
-            }, "POST"), LoginType.Twitter));
+            }, "POST"), LoginType.Twitter), RestClient);
         }
 
         public async Task<OpenTidlSession> LoginWithUsernameAsync(String username, String password)
         {
             return new OpenTidlSession(this, HandleLoginResponse(await RestClient.ProcessAsync<LoginModel>("/login/username", null, new
             {
-                username = username,
-                password = password,
+                username,
+                password,
                 token = Configuration.Token,
                 clientUniqueKey = Configuration.ClientUniqueKey,
                 clientVersion = Configuration.ClientVersion
-            }, "POST"), LoginType.Username));
+            }, "POST"), LoginType.Username), RestClient);
         }
 
         #endregion
@@ -99,9 +86,12 @@ namespace OpenTidl
 
         public async Task<OpenTidlSession> RestoreSessionAsync(String sessionId)
         {
-            return new OpenTidlSession(this, LoginModel.FromSession(HandleSessionResponse(await RestClient.ProcessAsync<SessionModel>(
-                RestUtility.FormatUrl("/sessions/{sessionId}", new { sessionId = sessionId }),
-                null, null, "GET"))));
+            return new OpenTidlSession(this, 
+                LoginModel.FromSession(HandleSessionResponse(
+                    await RestClient.ProcessAsync<SessionModel>(
+                        RestUtility.FormatUrl("/sessions/{sessionId}", new { sessionId }),
+                            null, null, "GET"))), 
+                RestClient);
         }
 
         #endregion
@@ -112,7 +102,7 @@ namespace OpenTidl
         public async Task<RecoverPasswordResponseModel> RecoverPasswordAsync(String username)
         {
             return HandleResponse(await RestClient.ProcessAsync<RecoverPasswordResponseModel>(
-                RestUtility.FormatUrl("/users/{username}/recoverpassword", new { username = username }), new
+                RestUtility.FormatUrl("/users/{username}/recoverpassword", new { username }), new
                 {
                     token = Configuration.Token,
                     countryCode = GetCountryCode()

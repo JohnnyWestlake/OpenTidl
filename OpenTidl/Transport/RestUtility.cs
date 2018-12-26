@@ -68,8 +68,7 @@ namespace OpenTidl.Transport
 
         internal static T ParseEnum<T>(String value) where T : struct
         {
-            T result;
-            if (Enum.TryParse(value, true, out result))
+            if (Enum.TryParse(value, true, out T result))
                 return result;
             return (T)Enum.ToObject(typeof(T), 0);
             //return Enum.GetValues(typeof(T)).OfType<T>().FirstOrDefault();
