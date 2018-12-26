@@ -41,15 +41,12 @@ namespace OpenTidl.Transport
 
         #region methods
         
-        private TModel DeserializeObject<TModel>(String data) where TModel : class
+        private TModel DeserializeObject<TModel>(Stream data) where TModel : class
         {
-            if (String.IsNullOrEmpty(data))
+            if (data == null)
                 return Activator.CreateInstance<TModel>();
             var serializer = new DataContractJsonSerializer(typeof(TModel));
-            using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(data)))
-            {
-                return serializer.ReadObject(ms) as TModel;
-            }
+            return serializer.ReadObject(data) as TModel;
         }
 
         #endregion
@@ -57,7 +54,7 @@ namespace OpenTidl.Transport
 
         #region construction
 
-        public RestResponse(String responseData, Int32 statusCode, String eTag)
+        public RestResponse(Stream responseData, Int32 statusCode, String eTag)
         {
             if (statusCode < 300)
                 this.Model = DeserializeObject<T>(responseData);

@@ -35,7 +35,8 @@ namespace OpenTidl
 
         public async Task<OpenTidlSession> LoginWithFacebookAsync(String accessToken)
         {
-            return new OpenTidlSession(this, HandleLoginResponse(await RestClient.ProcessAsync<LoginModel>("/login/facebook", null, new
+            return new OpenTidlSession(this, HandleLoginResponse(
+                await RestClient.GetResponseAsync<LoginModel>("/login/facebook", null, new
             {
                 accessToken,
                 token = Configuration.Token,
@@ -46,7 +47,7 @@ namespace OpenTidl
 
         public async Task<OpenTidlSession> LoginWithTokenAsync(String authenticationToken)
         {
-            return new OpenTidlSession(this, HandleLoginResponse(await RestClient.ProcessAsync<LoginModel>("/login/token", null, new
+            return new OpenTidlSession(this, HandleLoginResponse(await RestClient.GetResponseAsync<LoginModel>("/login/token", null, new
             {
                 authenticationToken,
                 token = Configuration.Token,
@@ -57,7 +58,7 @@ namespace OpenTidl
 
         public async Task<OpenTidlSession> LoginWithTwitterAsync(String accessToken, String accessTokenSecret)
         {
-            return new OpenTidlSession(this, HandleLoginResponse(await RestClient.ProcessAsync<LoginModel>("/login/twitter", null, new
+            return new OpenTidlSession(this, HandleLoginResponse(await RestClient.GetResponseAsync<LoginModel>("/login/twitter", null, new
             {
                 accessToken,
                 accessTokenSecret,
@@ -69,7 +70,7 @@ namespace OpenTidl
 
         public async Task<OpenTidlSession> LoginWithUsernameAsync(String username, String password)
         {
-            return new OpenTidlSession(this, HandleLoginResponse(await RestClient.ProcessAsync<LoginModel>("/login/username", null, new
+            return new OpenTidlSession(this, HandleLoginResponse(await RestClient.GetResponseAsync<LoginModel>("/login/username", null, new
             {
                 username,
                 password,
@@ -88,7 +89,7 @@ namespace OpenTidl
         {
             return new OpenTidlSession(this, 
                 LoginModel.FromSession(HandleSessionResponse(
-                    await RestClient.ProcessAsync<SessionModel>(
+                    await RestClient.GetResponseAsync<SessionModel>(
                         RestUtility.FormatUrl("/sessions/{sessionId}", new { sessionId }),
                             null, null, "GET"))), 
                 RestClient);
@@ -99,14 +100,14 @@ namespace OpenTidl
 
         #region user methods
 
-        public async Task<RecoverPasswordResponseModel> RecoverPasswordAsync(String username)
+        public Task<RecoverPasswordResponseModel> RecoverPasswordAsync(String username)
         {
-            return HandleResponse(await RestClient.ProcessAsync<RecoverPasswordResponseModel>(
+            return RestClient.HandleAsync<RecoverPasswordResponseModel>(
                 RestUtility.FormatUrl("/users/{username}/recoverpassword", new { username }), new
                 {
                     token = Configuration.Token,
                     countryCode = GetCountryCode()
-                }, null, "GET"));
+                }, null, "GET");
         }
         
         #endregion

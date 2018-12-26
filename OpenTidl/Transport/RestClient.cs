@@ -27,12 +27,15 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTidl.Models.Base;
 using System.Net.Http;
+using System.Linq;
+using System.Net.Http.Headers;
 
 namespace OpenTidl.Transport
 {
     public interface IRestClient
     {
-        Task<RestResponse<T>> ProcessAsync<T>(String path, Object query, Object request, String method, params (string, string)[] extraHeaders) where T : ModelBase;
+        Task<T> HandleAsync<T>(String path, Object query, Object request, String method, params (string, string)[] extraHeaders) where T : ModelBase;
+        Task<RestResponse<T>> GetResponseAsync<T>(String path, Object query, Object request, String method, params (string, string)[] extraHeaders) where T : ModelBase;
         Task<WebStreamModel> GetWebStreamModelAsync(String url);
     }
 
@@ -41,7 +44,7 @@ namespace OpenTidl.Transport
         #region properties
 
         internal String ApiEndpoint { get; private set; }
-        internal KeyValuePair<String, String>[] Headers { get; private set; }
+        internal List<(string, string)> Headers { get; private set; }
 
         #endregion
 
@@ -50,23 +53,55 @@ namespace OpenTidl.Transport
 
         HttpClient _client { get; }
 
-        public async Task<RestResponse<T>> ProcessAsync<T>(String path, Object query, Object request, String method, params (String, String)[] extraHeaders) where T : ModelBase
+        public async Task<T> HandleAsync<T>(String path, Object query, Object request, String method, params (String, String)[] extraHeaders) where T : ModelBase
         {
-            var encoding = new UTF8Encoding(false);
+            var response = await GetResponseAsync<T>(path, query, request, method, extraHeaders).ConfigureAwait(false);
+
+            if (response.Exception != null)
+                throw response.Exception;
+
+            return response.Model;
+        }
+
+        public async Task<RestResponse<T>> GetResponseAsync<T>(String path, Object query, Object request, String method, params (String, String)[] extraHeaders) where T : ModelBase
+        {
             var queryString = RestUtility.GetFormEncodedString(query);
             var url = String.IsNullOrEmpty(queryString) ? $"{ApiEndpoint}{path}" : $"{ApiEndpoint}{path}?{queryString}";
-            var req = CreateRequest(url, method, extraHeaders);
-            if (request != null)
+            byte[] content = null;
+
+            if (RestUtility.GetFormEncodedList(request) is var data && data != null)
             {
-                req.Content = new FormUrlEncodedContent(RestUtility.GetFormEncodedList(request));
+                using (var form = new FormUrlEncodedContent(data))
+                {
+                    content = await form.ReadAsByteArrayAsync().ConfigureAwait(false);
+                }
+            }
+
+            var headers = Headers.ToList();
+            headers.AddRange(extraHeaders);
+
+            return await SendAsync<T>(url, method, content, headers).ConfigureAwait(false);
+        }
+
+        public async Task<RestResponse<T>> SendAsync<T>(string url, string method, byte[] content, List<(string, string)> headers) where T : ModelBase
+        {
+            var req = CreateRequest(url, method, headers);
+            ByteArrayContent bc = null;
+            if (content != null)
+            {
+                bc = new ByteArrayContent(content);
+                bc.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
+                req.Content = bc;
             }
 
             HttpResponseMessage response;
             try
             {
                 response = await _client.SendAsync(req).ConfigureAwait(false);
-                var str = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                return new RestResponse<T>(str, (Int32)response.StatusCode, response.Headers.ETag?.Tag);
+                using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
+                {
+                    return new RestResponse<T>(stream, (Int32)response.StatusCode, response.Headers.ETag?.Tag);
+                }
             }
             //catch (HttpRequestException webEx)
             //{
@@ -75,6 +110,10 @@ namespace OpenTidl.Transport
             catch (Exception ex)
             {
                 return new RestResponse<T>(ex);
+            }
+            finally
+            {
+                bc?.Dispose();
             }
         }
 
@@ -92,14 +131,14 @@ namespace OpenTidl.Transport
             }
         }
 
-        private HttpRequestMessage CreateRequest(String url, String method, (String Key, String Value)[] extraHeaders)
+        private HttpRequestMessage CreateRequest(String url, String method, List<(String Key, String Value)> headers)
         {
             var req = new HttpRequestMessage(new HttpMethod(method), url);
             
-            if (extraHeaders != null)
+            if (headers != null)
             {
-                foreach (var h in extraHeaders)
-                    req.Headers.TryAddWithoutValidation(h.Key, h.Value);
+                foreach (var (Key, Value) in headers)
+                    req.Headers.TryAddWithoutValidation(Key, Value);
             }
             return req;
         }
@@ -114,18 +153,16 @@ namespace OpenTidl.Transport
             this.ApiEndpoint = apiEndpoint ?? "";
 
             _client = new HttpClient();
-            if (!string.IsNullOrWhiteSpace(userAgent))
+            Headers = new List<(string, string)>
             {
-                _client.DefaultRequestHeaders.UserAgent.ParseAdd(userAgent);
-            }
-
-            _client.DefaultRequestHeaders.AcceptEncoding.ParseAdd("gzip");
-            _client.DefaultRequestHeaders.AcceptEncoding.ParseAdd("defalte");
+                ("User-Agent", userAgent),
+                ("Accept-Encoding", "gzip, deflate")
+            };
 
             if (headers != null)
             {
                 foreach (var h in headers)
-                    _client.DefaultRequestHeaders.TryAddWithoutValidation(h.Key, h.Value);
+                    Headers.Add((h.Key, h.Value));
             }
         }
 
