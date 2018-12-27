@@ -114,17 +114,17 @@ namespace OpenTidl
 
         #region construction
 
-        public static async Task<OpenTidlClient> TryCreateAsync(ClientConfiguration config)
+        public static async Task<OpenTidlClient> TryCreateAsync(ClientConfiguration config, INetworkClient networkClientOverride = null)
         {
-            var client = new OpenTidlClient(config);
+            var client = new OpenTidlClient(config, networkClientOverride);
             client._defaultCountryCode = (await client.GetCountryAsync()).CountryCode;
             return client;
         }
 
-        private OpenTidlClient(ClientConfiguration config, IRestClient client = null)
+        private OpenTidlClient(ClientConfiguration config, INetworkClient client = null)
         {
             this.Configuration = config;
-            this.RestClient = client ?? new RestClient(config.ApiEndpoint, config.UserAgent, Header("X-Tidal-Token", config.Token));
+            this.RestClient = new OpenTidlRestClient(config.ApiEndpoint, config.UserAgent, client, Header("X-Tidal-Token", config.Token));
         }
 
         #endregion

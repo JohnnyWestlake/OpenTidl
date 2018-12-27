@@ -3,7 +3,7 @@
 
 This API is written in C# 7.1, with targetting profiles for both .NET Standard 1.4 and 2.0.
 
-*Forked from the original [.NET 4.5 code](https://github.com/jackfagner/OpenTidl) by Jack Fagner* 
+*Forked from the original [.NET 4.5 code](https://github.com/jackfagner/OpenTidl) by Jack Fagner. This version is extremely similar, but not directly compatible* 
 
 Most (relevant) functions used by TIDAL's web player or Android app are implemented, including:
 * Searching (albums, artists, tracks, videos)

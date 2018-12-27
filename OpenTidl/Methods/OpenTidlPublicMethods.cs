@@ -101,7 +101,7 @@ namespace OpenTidl
         public Task<ArtistModel> GetArtistAsync(Int32 artistId)
         {
             return RestClient.HandleAsync<ArtistModel>(
-                RestUtility.FormatUrl("/artists/{id}", new { id = artistId }), new
+                $"/artists/{artistId}", new
                 {
                     countryCode = GetCountryCode()
                 }, null, "GET");
@@ -111,7 +111,7 @@ namespace OpenTidl
             int artistId, AlbumFilter filter, int offset = 0, int limit = OpenTidlConstants.DEFAULT_LIMIT)
         {
             return RestClient.HandleAsync<JsonList<AlbumModel>>(
-                RestUtility.FormatUrl("/artists/{id}/albums", new { id = artistId }), new
+                $"/artists/{artistId}/albums", new
                 {
                     filter = filter.ToString("F"),
                     offset,
@@ -123,7 +123,7 @@ namespace OpenTidl
         public Task<JsonList<TrackModel>> GetRadioFromArtistAsync(Int32 artistId, Int32 offset = 0, Int32 limit = OpenTidlConstants.DEFAULT_LIMIT)
         {
             return RestClient.HandleAsync<JsonList<TrackModel>>(
-                RestUtility.FormatUrl("/artists/{id}/radio", new { id = artistId }), new
+                $"/artists/{artistId}/radio", new
                 {
                     offset,
                     limit,
@@ -134,7 +134,7 @@ namespace OpenTidl
         public Task<JsonList<ArtistModel>> GetSimilarArtistsAsync(Int32 artistId, Int32 offset = 0, Int32 limit = OpenTidlConstants.DEFAULT_LIMIT)
         {
             return RestClient.HandleAsync<JsonList<ArtistModel>>(
-                RestUtility.FormatUrl("/artists/{id}/similar", new { id = artistId }), new
+                $"/artists/{artistId}/similar", new
                 {
                     offset,
                     limit,
@@ -145,7 +145,7 @@ namespace OpenTidl
         public Task<JsonList<TrackModel>> GetArtistTopTracksAsync(Int32 artistId, Int32 offset = 0, Int32 limit = OpenTidlConstants.DEFAULT_LIMIT)
         {
             return RestClient.HandleAsync<JsonList<TrackModel>>(
-                RestUtility.FormatUrl("/artists/{id}/toptracks", new { id = artistId }), new
+                $"/artists/{artistId}/toptracks", new
                 {
                     offset,
                     limit,
@@ -156,7 +156,7 @@ namespace OpenTidl
         public Task<JsonList<VideoModel>> GetArtistVideosAsync(Int32 artistId, Int32 offset = 0, Int32 limit = OpenTidlConstants.DEFAULT_LIMIT)
         {
             return RestClient.HandleAsync<JsonList<VideoModel>>(
-                RestUtility.FormatUrl("/artists/{id}/videos", new { id = artistId }), new
+                $"/artists/{artistId}/videos", new
                 {
                     offset,
                     limit,
@@ -167,7 +167,7 @@ namespace OpenTidl
         public Task<ArtistBiographyModel> GetArtistBiographyAsync(Int32 artistId)
         {
             return RestClient.HandleAsync<ArtistBiographyModel>(
-                RestUtility.FormatUrl("/artists/{id}/bio", new { id = artistId }), new
+                $"/artists/{artistId}/bio", new
                 {
                     countryCode = GetCountryCode()
                 }, null, "GET");
@@ -176,7 +176,7 @@ namespace OpenTidl
         public Task<JsonList<LinkModel>> GetArtistLinksAsync(Int32 artistId, Int32 limit = OpenTidlConstants.DEFAULT_LIMIT)
         {
             return RestClient.HandleAsync<JsonList<LinkModel>>(
-                RestUtility.FormatUrl("/artists/{id}/links", new { id = artistId }), new
+                $"/artists/{artistId}/links", new
                 {
                     limit,
                     countryCode = GetCountryCode()
@@ -279,7 +279,7 @@ namespace OpenTidl
         public Task<TrackModel> GetTrackAsync(Int32 trackId)
         {
             return RestClient.HandleAsync<TrackModel>(
-                RestUtility.FormatUrl("/tracks/{id}", new { id = trackId }), new
+                $"/tracks/{trackId}", new
                 {
                     token = Configuration.Token,
                     countryCode = GetCountryCode()
@@ -289,7 +289,7 @@ namespace OpenTidl
         public Task<JsonList<ContributorModel>> GetTrackContributorsAsync(Int32 trackId)
         {
             return RestClient.HandleAsync<JsonList<ContributorModel>>(
-                RestUtility.FormatUrl("/tracks/{id}/contributors", new { id = trackId }), new
+                $"/tracks/{trackId}/contributors", new
                 {
                     token = Configuration.Token,
                     countryCode = GetCountryCode()
@@ -299,7 +299,7 @@ namespace OpenTidl
         public Task<JsonList<TrackModel>> GetRadioFromTrackAsync(Int32 trackId, Int32 limit = OpenTidlConstants.DEFAULT_LIMIT)
         {
             return RestClient.HandleAsync<JsonList<TrackModel>>(
-                RestUtility.FormatUrl("/tracks/{id}/radio", new { id = trackId }), new
+                $"/tracks/{trackId}/radio", new
                 {
                     limit,
                     token = Configuration.Token,

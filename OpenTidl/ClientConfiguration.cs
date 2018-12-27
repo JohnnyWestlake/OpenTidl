@@ -15,51 +15,49 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with OpenTidl.  If not, see <http://www.gnu.org/licenses/>.
+
+    --- 
+
+    Modified 2019 J. Westlake
 */
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Net.NetworkInformation;
 
 namespace OpenTidl
 {
     public class ClientConfiguration
     {
-        #region static properties
-
-        private static Lazy<ClientConfiguration> _defaultSettings = new Lazy<ClientConfiguration>(() =>
-            new ClientConfiguration("https://api.tidalhifi.com/v1", null,
-                "kgsOOmYk3zShYrNP", DefaultClientUniqueKey, "1.12.2", "US"));
-
-        public static ClientConfiguration Default
-        {
-            get { return _defaultSettings.Value; }
-        }
-
-        #endregion
-
-
         #region properties
 
-        public String ApiEndpoint { get; private set; }
+        public String ApiEndpoint { get; }
         public String UserAgent { get; private set; }
-        public String Token { get; private set; }
+        public String Token { get; }
         public String ClientUniqueKey { get; private set; }
-        public String ClientVersion { get; private set; }
+        public String ClientVersion { get; }
         public String DefaultCountryCode { get; private set; }
-        
+
         #endregion
 
 
         #region methods
 
-        public ClientConfiguration SetToken(string token)
+        /// <summary>
+        /// Creates a default ClientConfiguration to access the tidal API
+        /// </summary>
+        /// <param name="tidalToken">Required. A token uniquely identifying your tidal application.</param>
+        /// <param name="clientKey">Optional. A uniquely generated key identifying the client. If not specified, a default implementation is used.</param>
+        /// <param name="clientVersion">Optional. Provide an informational client version string.</param>
+        /// <param name="defaultCountry">Optional. Override the default country code. This may be automatically override by Tidal API.</param>
+        /// <returns></returns>
+        public static ClientConfiguration CreateDefault(string tidalToken, string clientKey = null, string clientVersion = "1.19.0.0", string defaultCountry = "US")
         {
-            this.Token = token;
-            return this;
+            if (string.IsNullOrWhiteSpace(tidalToken))
+                throw new ArgumentNullException(nameof(tidalToken));
+
+            return new ClientConfiguration("https://api.tidalhifi.com/v1", null, tidalToken, clientKey ?? DefaultClientUniqueKey, clientVersion, defaultCountry);
         }
+
 
         private static String DefaultClientUniqueKey
         {

@@ -15,14 +15,14 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with OpenTidl.  If not, see <http://www.gnu.org/licenses/>.
+
+    --- 
+
+    Modified 2019 J. Westlake
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using OpenTidl.Models.Base;
-using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.IO;
 
@@ -32,9 +32,11 @@ namespace OpenTidl.Transport
     {
         #region properties
 
-        public T Model { get; private set; }
-        public Int32 StatusCode { get; private set; }
-        public Exception Exception { get; internal set; }
+        public T Model { get; }
+        public Int32 StatusCode { get; }
+        public Exception Exception { get; }
+
+        private static Dictionary<Type, DataContractJsonSerializer> _cache { get; } = new Dictionary<Type, DataContractJsonSerializer>();
 
         #endregion
 
@@ -43,10 +45,21 @@ namespace OpenTidl.Transport
         
         private TModel DeserializeObject<TModel>(Stream data) where TModel : class
         {
-            if (data == null)
-                return Activator.CreateInstance<TModel>();
-            var serializer = new DataContractJsonSerializer(typeof(TModel));
-            return serializer.ReadObject(data) as TModel;
+            return data == null 
+                ? Activator.CreateInstance<TModel>() 
+                : GetSerializer<TModel>().ReadObject(data) as TModel;
+        }
+
+        private DataContractJsonSerializer GetSerializer<TModel>() where TModel : class
+        {
+            Type t = typeof(TModel);
+            if (!_cache.TryGetValue(t, out DataContractJsonSerializer serializer))
+            {
+                serializer = new DataContractJsonSerializer(t);
+                _cache[t] = serializer;
+            }
+
+            return serializer;
         }
 
         #endregion

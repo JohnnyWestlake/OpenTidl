@@ -17,12 +17,8 @@
     along with OpenTidl.  If not, see <http://www.gnu.org/licenses/>.
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using OpenTidl.Models;
-using OpenTidl.Models.Base;
 using OpenTidl.Transport;
 using OpenTidl.Methods;
 using OpenTidl.Enums;
@@ -42,7 +38,7 @@ namespace OpenTidl
                 token = Configuration.Token,
                 clientUniqueKey = Configuration.ClientUniqueKey,
                 clientVersion = Configuration.ClientVersion
-            }, "POST"), LoginType.Facebook), RestClient);
+            }, "POST", false), LoginType.Facebook), RestClient);
         }
 
         public async Task<OpenTidlSession> LoginWithTokenAsync(String authenticationToken)
@@ -53,7 +49,7 @@ namespace OpenTidl
                 token = Configuration.Token,
                 clientUniqueKey = Configuration.ClientUniqueKey,
                 clientVersion = Configuration.ClientVersion
-            }, "POST"), LoginType.Token), RestClient);
+            }, "POST", false), LoginType.Token), RestClient);
         }
 
         public async Task<OpenTidlSession> LoginWithTwitterAsync(String accessToken, String accessTokenSecret)
@@ -65,7 +61,7 @@ namespace OpenTidl
                 token = Configuration.Token,
                 clientUniqueKey = Configuration.ClientUniqueKey,
                 clientVersion = Configuration.ClientVersion
-            }, "POST"), LoginType.Twitter), RestClient);
+            }, "POST", false), LoginType.Twitter), RestClient);
         }
 
         public async Task<OpenTidlSession> LoginWithUsernameAsync(String username, String password)
@@ -77,7 +73,7 @@ namespace OpenTidl
                 token = Configuration.Token,
                 clientUniqueKey = Configuration.ClientUniqueKey,
                 clientVersion = Configuration.ClientVersion
-            }, "POST"), LoginType.Username), RestClient);
+            }, "POST", false), LoginType.Username), RestClient);
         }
 
         #endregion
@@ -91,7 +87,7 @@ namespace OpenTidl
                 LoginModel.FromSession(HandleSessionResponse(
                     await RestClient.GetResponseAsync<SessionModel>(
                         RestUtility.FormatUrl("/sessions/{sessionId}", new { sessionId }),
-                            null, null, "GET"))), 
+                            null, null, "GET", false))), 
                 RestClient);
         }
 
@@ -107,7 +103,7 @@ namespace OpenTidl
                 {
                     token = Configuration.Token,
                     countryCode = GetCountryCode()
-                }, null, "GET");
+                }, null, "GET", false);
         }
         
         #endregion

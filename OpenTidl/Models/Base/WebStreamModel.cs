@@ -7,6 +7,7 @@ using OpenTidl;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using OpenTidl.Transport;
 
 namespace OpenTidl.Models.Base
 {
@@ -42,6 +43,24 @@ namespace OpenTidl.Models.Base
                     model.ContentLength = response.Content.Headers.ContentLength.Value;
                     model.Stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
                     return model;
+                }
+            }
+            catch { }
+
+            return null;
+        }
+
+        static internal WebStreamModel Create(StreamResponse response)
+        {
+            try
+            {
+                if (response != null)
+                {
+                    return new WebStreamModel
+                    {
+                        ContentLength = response.Stream.Length,
+                        Stream = response.Stream
+                    };
                 }
             }
             catch { }

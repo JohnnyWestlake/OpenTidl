@@ -57,7 +57,7 @@ namespace OpenTidl.Methods
             var result = await _restClient.HandleAsync<EmptyModel>("/logout", new
             {
                 countryCode = CountryCode
-            }, new { }, "POST", _headers);
+            }, new { }, "POST", false, _headers);
 
             if (result == null )
                 this.LoginResult = null; //Clear session
@@ -91,7 +91,7 @@ namespace OpenTidl.Methods
                 RestUtility.FormatUrl("/playlists/{uuid}", new { uuid = playlistUuid }), new
                 {
                     countryCode = CountryCode
-                }, null, "GET", _headers);
+                }, null, "GET", false, _headers);
         }
 
         public Task<JsonList<TrackModel>> GetPlaylistTracksAsync(String playlistUuid, Int32 offset = 0, Int32 limit = OpenTidlConstants.DEFAULT_LIMIT)
@@ -102,7 +102,7 @@ namespace OpenTidl.Methods
                     offset,
                     limit,
                     countryCode = CountryCode
-                }, null, "GET", _headers);
+                }, null, "GET", false, _headers);
         }
 
         public Task<EmptyModel> AddPlaylistTracksAsync(String playlistUuid, String playlistETag, IEnumerable<Int32> trackIds, Int32 toIndex = 0)
@@ -115,7 +115,7 @@ namespace OpenTidl.Methods
                 {
                     trackIds = String.Join(",", trackIds),
                     toIndex
-                }, "POST",
+                }, "POST", false,
                 Headers("If-None-Match", playlistETag));
         }
 
@@ -129,7 +129,7 @@ namespace OpenTidl.Methods
                 }), new
                 {
                     countryCode = CountryCode
-                }, null, "DELETE",
+                }, null, "DELETE", false,
                 Headers("If-None-Match", playlistETag));
         }
 
@@ -142,7 +142,7 @@ namespace OpenTidl.Methods
                 }), new
                 {
                     countryCode = CountryCode
-                }, null, "DELETE",
+                }, null, "DELETE", false,
                 Headers("If-None-Match", playlistETag));
         }
 
@@ -159,7 +159,7 @@ namespace OpenTidl.Methods
                 }, new
                 {
                     toIndex
-                }, "POST",
+                }, "POST", false,
                 Headers("If-None-Match", playlistETag));
         }
 
@@ -175,7 +175,7 @@ namespace OpenTidl.Methods
                 }, new
                 {
                     title
-                }, "POST",
+                }, "POST", false,
                 Headers("If-None-Match", playlistETag));
         }
 
@@ -188,14 +188,14 @@ namespace OpenTidl.Methods
         {
             return _restClient.HandleAsync<ClientModel>(
                 RestUtility.FormatUrl("/sessions/{sessionId}/client", new { sessionId = SessionId }),
-                null, null, "GET", _headers);
+                null, null, "GET", false, _headers);
         }
 
         public Task<SessionModel> GetSessionAsync()
         {
             return _restClient.HandleAsync<SessionModel>(
                 RestUtility.FormatUrl("/sessions/{sessionId}", new { sessionId = SessionId }),
-                null, null, "GET", _headers);
+                null, null, "GET", false, _headers);
         }
 
         #endregion
@@ -211,7 +211,7 @@ namespace OpenTidl.Methods
                     soundQuality,
                     playlistUuid,
                     countryCode = CountryCode
-                }, null, "GET", _headers);
+                }, null, "GET", false, _headers);
         }
 
         public Task<AssetModel> GetTrackAssetUrlAsync(int trackId)
@@ -222,7 +222,7 @@ namespace OpenTidl.Methods
                     assetpresentation = "FULL",
                     audioquality = "HI_RES",
                     urlusagemode = "STREAM"
-                }, null, "GET", _headers);
+                }, null, "GET", false, _headers);
             //tracks/98068670/urlpostpaywall?assetpresentation=FULL&audioquality=HI_RES&urlusagemode=STREAM
         }
 
@@ -233,7 +233,7 @@ namespace OpenTidl.Methods
                 {
                     soundQuality,
                     countryCode = CountryCode
-                }, null, "GET", _headers);
+                }, null, "GET", false, _headers);
         }
 
         #endregion
@@ -249,7 +249,7 @@ namespace OpenTidl.Methods
                     filter = filter.ToString(),
                     limit,
                     countryCode = CountryCode
-                }, null, "GET", _headers);
+                }, null, "GET", false, _headers);
         }
 
         public Task<JsonList<PlaylistModel>> GetUserPlaylistsAsync(Int32 limit = OpenTidlConstants.DEFAULT_LIMIT)
@@ -259,7 +259,7 @@ namespace OpenTidl.Methods
                 {
                     limit,
                     countryCode = CountryCode
-                }, null, "GET", _headers);
+                }, null, "GET", false, _headers);
         }
 
         public Task<PlaylistModel> CreateUserPlaylistAsync(String title)
@@ -271,7 +271,7 @@ namespace OpenTidl.Methods
                 }, new
                 {
                     title
-                }, "POST", _headers);
+                }, "POST", false, _headers);
         }
 
         public Task<UserSubscriptionModel> GetUserSubscriptionAsync()
@@ -280,7 +280,7 @@ namespace OpenTidl.Methods
                 RestUtility.FormatUrl("/users/{userId}/subscription", new { userId = UserId }), new
                 {
                     countryCode = CountryCode
-                }, null, "GET", _headers);
+                }, null, "GET", false, _headers);
         }
 
         public Task<UserModel> GetUserAsync()
@@ -289,7 +289,7 @@ namespace OpenTidl.Methods
                 RestUtility.FormatUrl("/users/{userId}", new { userId = UserId }), new
                 {
                     countryCode = CountryCode
-                }, null, "GET", _headers);
+                }, null, "GET", false, _headers);
         }
 
         #endregion
@@ -304,14 +304,14 @@ namespace OpenTidl.Methods
             SortDirection direction = SortDirection.DESC)
         {
             return _restClient.HandleAsync<JsonList<JsonListItem<AlbumModel>>>(
-                RestUtility.FormatUrl("/users/{userId}/favorites/albums", new { userId = UserId }), new
+                $"/users/{UserId}/favorites/albums", new
                 {
                     offset,
                     limit,
                     order = order.ToString("F"),
                     orderDirection = direction.ToString("F"),
                     countryCode = CountryCode
-                }, null, "GET", _headers);
+                }, null, "GET", false, _headers);
         }
 
         public Task<JsonList<JsonListItem<ArtistModel>>> GetFavoriteArtistsAsync(
@@ -321,24 +321,24 @@ namespace OpenTidl.Methods
             SortDirection direction = SortDirection.DESC)
         {
             return _restClient.HandleAsync<JsonList<JsonListItem<ArtistModel>>>(
-                RestUtility.FormatUrl("/users/{userId}/favorites/artists", new { userId = UserId }), new
+                $"/users/{UserId}/favorites/artists", new
                 {
                     offset,
                     limit,
                     order = order.ToString("F"),
                     orderDirection = direction.ToString("F"),
                     countryCode = CountryCode
-                }, null, "GET", _headers);
+                }, null, "GET", false, _headers);
         }
 
         public Task<JsonList<JsonListItem<PlaylistModel>>> GetFavoritePlaylistsAsync(Int32 limit = OpenTidlConstants.DEFAULT_LIMIT)
         {
             return _restClient.HandleAsync<JsonList<JsonListItem<PlaylistModel>>>(
-                RestUtility.FormatUrl("/users/{userId}/favorites/playlists", new { userId = UserId }), new
+                $"/users/{UserId}/favorites/playlists", new
                 {
                     limit,
                     countryCode = CountryCode
-                }, null, "GET", _headers);
+                }, null, "GET", false, _headers);
         }
 
         public Task<JsonList<JsonListItem<TrackModel>>> GetFavoriteTracksAsync(
@@ -348,111 +348,95 @@ namespace OpenTidl.Methods
             SortDirection direction = SortDirection.DESC)
         {
             return _restClient.HandleAsync<JsonList<JsonListItem<TrackModel>>>(
-                RestUtility.FormatUrl("/users/{userId}/favorites/tracks", new { userId = UserId }), new
+                $"/users/{UserId}/favorites/tracks", new
                 {
                     offset,
                     limit,
                     order = order.ToString("F"),
                     orderDirection = direction.ToString("F"),
                     countryCode = CountryCode
-                }, null, "GET", _headers);
+                }, null, "GET", false, _headers);
         }
 
         public Task<EmptyModel> AddFavoriteAlbumAsync(Int32 albumId)
         {
             return _restClient.HandleAsync<EmptyModel>(
-                RestUtility.FormatUrl("/users/{userId}/favorites/albums", new { userId = UserId }), 
+                $"/users/{UserId}/favorites/albums", 
                 new { countryCode = CountryCode }, 
                 new { albumId }, 
-                "POST", _headers);
+                "POST", false, _headers);
         }
 
         public Task<EmptyModel> AddFavoriteArtistAsync(Int32 artistId)
         {
             return _restClient.HandleAsync<EmptyModel>(
-                RestUtility.FormatUrl("/users/{userId}/favorites/artists", new { userId = UserId }), new
+                $"/users/{UserId}/favorites/artists", new
                 {
                     countryCode = CountryCode
                 }, new
                 {
                     artistId
-                }, "POST", _headers);
+                }, "POST", false, _headers);
         }
 
         public Task<EmptyModel> AddFavoritePlaylistAsync(String playlistUuid)
         {
             return _restClient.HandleAsync<EmptyModel>(
-                RestUtility.FormatUrl("/users/{userId}/favorites/playlists", new { userId = UserId }), new
+                $"/users/{UserId}/favorites/playlists", new
                 {
                     countryCode = CountryCode
                 }, new
                 {
                     uuid = playlistUuid
-                }, "POST", _headers);
+                }, "POST", false, _headers);
         }
 
         public Task<EmptyModel> AddFavoriteTrackAsync(Int32 trackId)
         {
             return _restClient.HandleAsync<EmptyModel>(
-                RestUtility.FormatUrl("/users/{userId}/favorites/tracks", new { userId = UserId }), new
+                $"/users/{UserId}/favorites/tracks", new
                 {
                     countryCode = CountryCode
                 }, new
                 {
                     trackId
-                }, "POST", _headers);
+                }, "POST", false, _headers);
         }
 
         public Task<EmptyModel> RemoveFavoriteAlbumAsync(Int32 albumId)
         {
             return _restClient.HandleAsync<EmptyModel>(
-                RestUtility.FormatUrl("/users/{userId}/favorites/albums/{albumId}", new 
-                { 
-                    userId = UserId,
-                    albumId
-                }), new
+                $"/users/{UserId}/favorites/albums/{albumId}", new
                 {
                     countryCode = CountryCode
-                }, null, "DELETE", _headers);
+                }, null, "DELETE", false, _headers);
         }
 
         public Task<EmptyModel> RemoveFavoriteArtistAsync(Int32 artistId)
         {
             return _restClient.HandleAsync<EmptyModel>(
-                RestUtility.FormatUrl("/users/{userId}/favorites/artists/{artistId}", new
-                {
-                    userId = UserId,
-                    artistId
-                }), new
+                $"/users/{UserId}/favorites/artists/{artistId}", new
                 {
                     countryCode = CountryCode
-                }, null, "DELETE", _headers);
+                }, null, "DELETE", false, _headers);
         }
 
         public Task<EmptyModel> RemoveFavoritePlaylistAsync(String playlistUuid)
         {
             return _restClient.HandleAsync<EmptyModel>(
-                RestUtility.FormatUrl("/users/{userId}/favorites/playlists/{uuid}", new
-                {
-                    userId = UserId,
-                    uuid = playlistUuid
-                }), new
+                $"/users/{UserId}/favorites/playlists/{playlistUuid}", new
                 {
                     countryCode = CountryCode
-                }, null, "DELETE", _headers);
+                }, null, "DELETE", false, _headers);
         }
 
         public Task<EmptyModel> RemoveFavoriteTrackAsync(Int32 trackId)
         {
             return _restClient.HandleAsync<EmptyModel>(
-                RestUtility.FormatUrl("/users/{userId}/favorites/tracks/{trackId}", new
-                {
-                    userId = UserId,
-                    trackId
-                }), new
+                $"/users/{UserId}/favorites/tracks/{trackId}", new
                 {
                     countryCode = CountryCode
-                }, null, "DELETE", _headers);
+                }, null, "DELETE", false, _headers);
         }
 
         #endregion
@@ -463,21 +447,21 @@ namespace OpenTidl.Methods
         public Task<VideoModel> GetVideoAsync(Int32 videoId)
         {
             return _restClient.HandleAsync<VideoModel>(
-                RestUtility.FormatUrl("/videos/{id}", new { id = videoId }), new
+                $"/videos/{videoId}", new
                 {
                     countryCode = CountryCode
-                }, null, "GET", _headers);
+                }, null, "GET", false, _headers);
         }
 
         public Task<VideoStreamUrlModel> GetVideoStreamUrlAsync(Int32 videoId, VideoQuality videoQuality)
         {
             return _restClient.HandleAsync<VideoStreamUrlModel>(
-                RestUtility.FormatUrl("/videos/{id}/streamurl", new { id = videoId }), new
+                $"/videos/{videoId}/streamurl", new
                 {
                     videoQuality,
                     sessionId = SessionId,
                     countryCode = CountryCode
-                }, null, "GET", _headers);
+                }, null, "GET", false, _headers);
         }
 
         #endregion
