@@ -37,6 +37,8 @@ namespace OpenTidl.Transport
     {
         #region properties
 
+        public const string TIMEOUT_HEADER = "X-Timeout";
+
         internal String ApiEndpoint { get; }
         internal List<(string, string)> Headers { get; }
 
@@ -90,7 +92,7 @@ namespace OpenTidl.Transport
         {
             try
             {
-                var resp = await _client.GetResponseStreamAsync(url, "GET", null, false, null);
+                var resp = await _client.GetResponseStreamAsync(url, "GET", null, false, new List<(string, string)> { (TIMEOUT_HEADER, "none") });
                 return WebStreamModel.Create(resp);
             }
             catch
