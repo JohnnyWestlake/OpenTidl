@@ -118,10 +118,18 @@ namespace OpenTidl
 
         #region construction
 
-        public static async Task<OpenTidlClient> TryCreateAsync(ClientConfiguration config, INetworkClient networkClientOverride = null)
+        public static async Task<OpenTidlClient> TryCreateAsync(
+            ClientConfiguration config, 
+            string countryOverride = null,
+            INetworkClient networkClientOverride = null)
         {
             var client = new OpenTidlClient(config, networkClientOverride);
-            client._defaultCountryCode = (await client.GetCountryAsync()).CountryCode;
+
+            if (!string.IsNullOrWhiteSpace(countryOverride))
+                client._defaultCountryCode = countryOverride;
+            else
+                client._defaultCountryCode = (await client.GetCountryAsync()).CountryCode;
+
             return client;
         }
 
