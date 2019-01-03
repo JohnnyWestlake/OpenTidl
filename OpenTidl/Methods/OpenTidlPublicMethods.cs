@@ -15,15 +15,17 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with OpenTidl.  If not, see <http://www.gnu.org/licenses/>.
+
+    --- 
+
+    Modified 2019 J. Westlake
 */
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using OpenTidl.Models;
 using OpenTidl.Models.Base;
-using OpenTidl.Transport;
 using OpenTidl.Enums;
 
 namespace OpenTidl
@@ -36,9 +38,8 @@ namespace OpenTidl
         public Task<AlbumModel> GetAlbumAsync(Int32 albumId)
         {
             return RestClient.HandleAsync<AlbumModel>(
-                RestUtility.FormatUrl("/albums/{id}", new { id = albumId }), new
+                $"/albums/{albumId}", new
                 {
-                    token = Configuration.Token,
                     countryCode = GetCountryCode()
                 }, null, "GET");
         }
@@ -49,7 +50,6 @@ namespace OpenTidl
                 "/albums", new
                 {
                     ids = String.Join(",", albumIds),
-                    token = Configuration.Token,
                     countryCode = GetCountryCode()
                 }, null, "GET");
         }
@@ -57,7 +57,7 @@ namespace OpenTidl
         public Task<JsonList<AlbumModel>> GetSimilarAlbumsAsync(Int32 albumId)
         {
             return RestClient.HandleAsync<JsonList<AlbumModel>>(
-                RestUtility.FormatUrl("/albums/{id}/similar", new { id = albumId }), new
+                $"/albums/{albumId}/similar", new
                 {
                     countryCode = GetCountryCode()
                 }, null, "GET");
@@ -66,7 +66,7 @@ namespace OpenTidl
         public Task<JsonList<TrackModel>> GetAlbumTracksAsync(Int32 albumId)
         {
             return RestClient.HandleAsync<JsonList<TrackModel>>(
-                RestUtility.FormatUrl("/albums/{id}/tracks", new { id = albumId }), new
+                $"/albums/{albumId}/tracks", new
                 {
                     countryCode = GetCountryCode()
                 }, null, "GET");
@@ -75,7 +75,7 @@ namespace OpenTidl
         public Task<JsonList<CreditLink>> GetAlbumTracksWithCreditsAsync(Int32 albumId, int offset = 0, int limit = OpenTidlConstants.DEFAULT_LIMIT)
         {
             return RestClient.HandleAsync<JsonList<CreditLink>>(
-                RestUtility.FormatUrl("/albums/{id}/items/credits", new { id = albumId }), new
+                $"/albums/{albumId}/items/credits", new
                 {
                     replace = true,
                     offset,
@@ -87,7 +87,7 @@ namespace OpenTidl
         public Task<AlbumReviewModel> GetAlbumReviewAsync(Int32 albumId)
         {
             return RestClient.HandleAsync<AlbumReviewModel>(
-                RestUtility.FormatUrl("/albums/{id}/review", new { id = albumId }), new
+                $"/albums/{albumId}/review", new
                 {
                     countryCode = GetCountryCode()
                 }, null, "GET");
@@ -281,7 +281,6 @@ namespace OpenTidl
             return RestClient.HandleAsync<TrackModel>(
                 $"/tracks/{trackId}", new
                 {
-                    token = Configuration.Token,
                     countryCode = GetCountryCode()
                 }, null, "GET");
         }
@@ -291,7 +290,6 @@ namespace OpenTidl
             return RestClient.HandleAsync<JsonList<ContributorModel>>(
                 $"/tracks/{trackId}/contributors", new
                 {
-                    token = Configuration.Token,
                     countryCode = GetCountryCode()
                 }, null, "GET");
         }
@@ -302,7 +300,6 @@ namespace OpenTidl
                 $"/tracks/{trackId}/radio", new
                 {
                     limit,
-                    token = Configuration.Token,
                     countryCode = GetCountryCode()
                 }, null, "GET");
         }

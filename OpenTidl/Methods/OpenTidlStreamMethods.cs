@@ -15,6 +15,10 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with OpenTidl.  If not, see <http://www.gnu.org/licenses/>.
+
+    --- 
+
+    Modified 2019 J. Westlake
 */
 using System;
 using System.Threading.Tasks;
