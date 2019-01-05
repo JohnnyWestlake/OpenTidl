@@ -1,4 +1,4 @@
-﻿/*
+/*
     Copyright (C) 2015  Jack Fagner
 
     This file is part of OpenTidl.
@@ -59,7 +59,7 @@ namespace OpenTidl.Methods
                 countryCode = CountryCode
             }, new { }, "POST", false, _headers);
 
-            if (result == null )
+            if (result == null)
                 this.LoginResult = null; //Clear session
 
             return result;
@@ -297,6 +297,15 @@ namespace OpenTidl.Methods
 
         #region user favorites methods
 
+        public Task<FavoritesModel> GetFavoriteIdsAsync()
+        {
+            return _restClient.HandleAsync<FavoritesModel>(
+                $"/users/{UserId}/favorites/ids", new
+                {
+                    countryCode = CountryCode
+                }, null, "GET", false, _headers);
+        }
+
         public Task<JsonList<JsonListItem<AlbumModel>>> GetFavoriteAlbumsAsync(
             int offset = 0,
             int limit = 100,
@@ -342,8 +351,8 @@ namespace OpenTidl.Methods
         }
 
         public Task<JsonList<JsonListItem<TrackModel>>> GetFavoriteTracksAsync(
-            int offset = 0, 
-            int limit = 100, 
+            int offset = 0,
+            int limit = 100,
             SortOrder order = SortOrder.DATE,
             SortDirection direction = SortDirection.DESC)
         {
@@ -361,9 +370,9 @@ namespace OpenTidl.Methods
         public Task<EmptyModel> AddFavoriteAlbumAsync(Int32 albumId)
         {
             return _restClient.HandleAsync<EmptyModel>(
-                $"/users/{UserId}/favorites/albums", 
-                new { countryCode = CountryCode }, 
-                new { albumId }, 
+                $"/users/{UserId}/favorites/albums",
+                new { countryCode = CountryCode },
+                new { albumId },
                 "POST", false, _headers);
         }
 

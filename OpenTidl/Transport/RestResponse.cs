@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using OpenTidl.Models.Base;
 using System.Runtime.Serialization.Json;
 using System.IO;
+using OpenTidl.Models;
 
 namespace OpenTidl.Transport
 {
@@ -45,7 +46,10 @@ namespace OpenTidl.Transport
         
         private TModel DeserializeObject<TModel>(Stream data) where TModel : class
         {
-            return data == null 
+            if (typeof(TModel) == typeof(EmptyModel) && data != null)
+                return Activator.CreateInstance<TModel>();
+
+            return data == null || data.Length == 0
                 ? Activator.CreateInstance<TModel>() 
                 : GetSerializer<TModel>().ReadObject(data) as TModel;
         }
