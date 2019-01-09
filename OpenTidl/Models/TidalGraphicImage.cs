@@ -17,23 +17,18 @@
     along with OpenTidl.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-using System;
-using System.Collections.Generic;
 using System.Runtime.Serialization;
-using System.Text;
 
-namespace OpenTidl.Models.Base
+namespace OpenTidl.Models
 {
     [DataContract]
-    public class CreditLink
+    public class TidalGraphicImage
     {
-        [DataMember(Name ="item")]
-        public TrackModel Item { get; set; }
-
-        [DataMember(Name = "type")]
-        public string Type { get; set; }
-
-        [DataMember(Name = "credits")]
-        public CreditModel[] Credits { get; set; }
+        [DataMember]
+        public string id { get; set; }
+        [DataMember]
+        public string vibrantColor { get; set; }
+        [DataMember]
+        public string type { get; set; }
     }
 }

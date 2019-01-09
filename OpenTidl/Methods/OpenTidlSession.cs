@@ -475,6 +475,21 @@ namespace OpenTidl.Methods
 
         #endregion
 
+        #region page methods
+
+        public Task<PageRoot> GetHomePageAsync()
+        {
+            return _restClient.HandleAsync<PageRoot>(
+                $"/pages/home", new
+                {
+                    locale = "en_US",
+                    deviceType = "DESKTOP",
+                    countryCode = CountryCode
+                }, null, "GET", false, _headers);
+        }
+
+        #endregion
+
 
         #endregion
 

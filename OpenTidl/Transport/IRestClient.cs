@@ -22,6 +22,7 @@
 */
 
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using OpenTidl.Models.Base;
 
@@ -29,8 +30,9 @@ namespace OpenTidl.Transport
 {
     public interface IRestClient
     {
-        Task<T> HandleAsync<T>(String path, Object query, Object request, String method, bool canCache = true, params (string, string)[] extraHeaders) where T : ModelBase;
-        Task<RestResponse<T>> GetResponseAsync<T>(String path, Object query, Object request, String method, bool canCache, params (string, string)[] extraHeaders) where T : ModelBase;
+        Task<T> HandleAsync<T>(String path, Object query, Object request, String method, bool canCache = true, params (string, string)[] extraHeaders) where T : class;
+        Task<RestResponse<T>> GetResponseAsync<T>(String path, Object query, Object request, String method, bool canCache, params (string, string)[] extraHeaders) where T : class;
         Task<WebStreamModel> GetWebStreamModelAsync(String url);
+        void SetSerializer(IOpenTidlSerializer serializer);
     }
 }

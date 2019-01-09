@@ -33,7 +33,7 @@ namespace OpenTidl
     {
         #region image methods
 
-        private static string GetPlaylistImageUrl(String image, String playlistUuid, PlaylistImageSize size)
+        public static string GetPlaylistImageUrl(String image, String playlistUuid, PlaylistImageSize size)
         {
             int w = 750;
             int h = 500;

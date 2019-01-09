@@ -30,6 +30,8 @@ using System.Net.Http;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.IO;
+using System.Runtime.Serialization.Json;
+using OpenTidl.Models;
 
 namespace OpenTidl.Transport
 {
@@ -44,13 +46,15 @@ namespace OpenTidl.Transport
 
         private INetworkClient _client { get; }
 
+        private IOpenTidlSerializer _serializer { get; set; }
+
         #endregion
 
 
         #region methods
 
 
-        public async Task<T> HandleAsync<T>(String path, Object query, Object request, String method, bool canCache = true, params (String, String)[] extraHeaders) where T : ModelBase
+        public async Task<T> HandleAsync<T>(String path, Object query, Object request, String method, bool canCache = true, params (String, String)[] extraHeaders) where T : class
         {
             var response = await GetResponseAsync<T>(path, query, request, method, canCache, extraHeaders).ConfigureAwait(false);
 
@@ -60,7 +64,7 @@ namespace OpenTidl.Transport
             return response.Model;
         }
 
-        public async Task<RestResponse<T>> GetResponseAsync<T>(String path, Object query, Object request, String method, bool canCache, params (String, String)[] extraHeaders) where T : ModelBase
+        public async Task<RestResponse<T>> GetResponseAsync<T>(String path, Object query, Object request, String method, bool canCache, params (String, String)[] extraHeaders) where T : class
         {
             var queryString = RestUtility.GetFormEncodedString(query);
             var url = String.IsNullOrEmpty(queryString) ? $"{ApiEndpoint}{path}" : $"{ApiEndpoint}{path}?{queryString}";
@@ -77,15 +81,23 @@ namespace OpenTidl.Transport
             var headers = Headers.ToList();
             headers.AddRange(extraHeaders);
 
-            var response = await _client.GetResponseStreamAsync(url, method, content, canCache, headers);
-            if (response.IsSuccess)
+            using (var response = await _client.GetResponseStreamAsync(url, method, content, canCache, headers).ConfigureAwait(false))
             {
-                var result = new RestResponse<T>(response.Stream, response.StatusCode, response.ETag);
-                response.Dispose();
-                return result;
-            }
+                if (response.IsSuccess)
+                {
+                    T model = default;
+                    Exception exc = default;
+                    if (response.StatusCode < 300)
+                        model = _serializer.DeserializeObject<T>(response.Stream);
 
-            return new RestResponse<T>(response.Exception);
+                    if (response.StatusCode >= 400)
+                        exc = new OpenTidlException(_serializer.DeserializeObject<ErrorModel>(response.Stream));
+
+                    return new RestResponse<T>(model, exc, response.StatusCode, response.ETag);
+                }
+
+                return new RestResponse<T>(response.Exception);
+            }
         }
 
         public async Task<WebStreamModel> GetWebStreamModelAsync(String url)
@@ -99,6 +111,11 @@ namespace OpenTidl.Transport
             {
                 return null;
             }
+        }
+
+        public void SetSerializer(IOpenTidlSerializer serializer)
+        {
+            _serializer = serializer;
         }
 
         #endregion
@@ -126,6 +143,9 @@ namespace OpenTidl.Transport
                 foreach (var h in headers)
                     Headers.Add((h.Key, h.Value));
             }
+
+            //_serializer = new OpenTidlDataContractDeserializer();
+            _serializer = new NewtonsoftSerializer();
         }
 
         #endregion

@@ -29,7 +29,7 @@ using OpenTidl.Models;
 
 namespace OpenTidl.Transport
 {
-    public class RestResponse<T> where T : ModelBase
+    public class RestResponse<T> where T : class
     {
         #region properties
 
@@ -37,49 +37,18 @@ namespace OpenTidl.Transport
         public Int32 StatusCode { get; }
         public Exception Exception { get; }
 
-        private static Dictionary<Type, DataContractJsonSerializer> _cache { get; } = new Dictionary<Type, DataContractJsonSerializer>();
-
         #endregion
-
-
-        #region methods
-        
-        private TModel DeserializeObject<TModel>(Stream data) where TModel : class
-        {
-            if (typeof(TModel) == typeof(EmptyModel) && data != null)
-                return Activator.CreateInstance<TModel>();
-
-            return data == null || data.Length == 0
-                ? Activator.CreateInstance<TModel>() 
-                : GetSerializer<TModel>().ReadObject(data) as TModel;
-        }
-
-        private DataContractJsonSerializer GetSerializer<TModel>() where TModel : class
-        {
-            Type t = typeof(TModel);
-            if (!_cache.TryGetValue(t, out DataContractJsonSerializer serializer))
-            {
-                serializer = new DataContractJsonSerializer(t);
-                _cache[t] = serializer;
-            }
-
-            return serializer;
-        }
-
-        #endregion
-
 
         #region construction
 
-        public RestResponse(Stream responseData, Int32 statusCode, String eTag)
+        public RestResponse(T model, Exception ex, Int32 statusCode, String eTag)
         {
-            if (statusCode < 300)
-                this.Model = DeserializeObject<T>(responseData);
-            if (statusCode >= 400)
-                this.Exception = new OpenTidlException(DeserializeObject<ErrorModel>(responseData));
+            this.Model = model;
+            this.Exception = ex;
             this.StatusCode = statusCode;
-            if (this.Model != null)
-                (this.Model as ModelBase).ETag = eTag;
+
+            if (this.Model is ModelBase modelbase)
+                modelbase.ETag = eTag;
         }
 
         public RestResponse(Exception ex)
