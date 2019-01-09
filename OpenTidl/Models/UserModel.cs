@@ -31,7 +31,7 @@ namespace OpenTidl.Models
     [DataContract]
     public class UserModel : ModelBase
     {
-        [IgnoreDataMember]
+        [DataMember(Name = "dateOfBirth")]
         public DateTime? DateOfBirth { get; private set; }
 
         [DataMember(Name = "email")]
@@ -83,13 +83,6 @@ namespace OpenTidl.Models
                         break;
                 }
             }
-        }
-
-        [DataMember(Name = "dateOfBirth")]
-        private String DateOfBirthHelper
-        {
-            get { return RestUtility.FormatDate(DateOfBirth); }
-            set { DateOfBirth = RestUtility.ParseDate(value); }
         }
 
         #endregion

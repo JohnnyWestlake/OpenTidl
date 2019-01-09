@@ -52,13 +52,13 @@ namespace OpenTidl.Models
         [IgnoreDataMember]
         public VideoQuality Quality { get; private set; }
 
-        [IgnoreDataMember]
+        [DataMember(Name="releaseDate")]
         public DateTime? ReleaseDate { get; private set; }
 
         [DataMember(Name = "streamReady")]
         public Boolean StreamReady { get; private set; }
 
-        [IgnoreDataMember]
+        [DataMember(Name = "streamStartDate")]
         public DateTime? StreamStartDate { get; private set; }
 
         [DataMember(Name = "title")]
@@ -72,20 +72,6 @@ namespace OpenTidl.Models
         {
             get { return Quality.ToString(); }
             set { Quality = RestUtility.ParseEnum<VideoQuality>(value); }
-        }
-
-        [DataMember(Name = "releaseDate")]
-        private String ReleaseDateHelper
-        {
-            get { return RestUtility.FormatDate(ReleaseDate); }
-            set { ReleaseDate = RestUtility.ParseDate(value); }
-        }
-
-        [DataMember(Name = "streamStartDate")]
-        private String StreamStartDateHelper
-        {
-            get { return RestUtility.FormatDate(StreamStartDate); }
-            set { StreamStartDate = RestUtility.ParseDate(value); }
         }
 
         #endregion

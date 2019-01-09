@@ -24,11 +24,11 @@ namespace OpenTidl.Models
     [DataContract]
     public class TidalGraphic
     {
-        [DataMember]
-        public string type { get; set; }
-        [DataMember]
-        public string text { get; set; }
-        [DataMember]
-        public TidalGraphicImage[] images { get; set; }
+        [DataMember(Name = "type")]
+        public string Type { get; set; }
+        [DataMember(Name = "text")]
+        public string Text { get; set; }
+        [DataMember(Name = "images")]
+        public TidalGraphicImage[] Images { get; set; }
     }
 }

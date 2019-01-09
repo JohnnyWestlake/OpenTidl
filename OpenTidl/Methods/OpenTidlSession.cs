@@ -94,6 +94,17 @@ namespace OpenTidl.Methods
                 }, null, "GET", false, _headers);
         }
 
+        public Task<JsonList<ITidalPlaylistItem>> GetPlaylistItemsAsync(String playlistUuid, Int32 offset = 0, Int32 limit = OpenTidlConstants.DEFAULT_LIMIT)
+        {
+            return _restClient.HandleAsync<JsonList<ITidalPlaylistItem>>(
+                RestUtility.FormatUrl("/playlists/{uuid}/items", new { uuid = playlistUuid }), new
+                {
+                    offset,
+                    limit,
+                    countryCode = CountryCode
+                }, null, "GET", false, _headers);
+        }
+
         public Task<JsonList<TrackModel>> GetPlaylistTracksAsync(String playlistUuid, Int32 offset = 0, Int32 limit = OpenTidlConstants.DEFAULT_LIMIT)
         {
             return _restClient.HandleAsync<JsonList<TrackModel>>(

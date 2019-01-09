@@ -33,18 +33,21 @@ namespace OpenTidl
     {
         #region image methods
 
-        public static string GetPlaylistImageUrl(String image, String playlistUuid, PlaylistImageSize size)
+        public static string GetImageUrl(string id, int width, int height)
+        {
+            return String.Format("http://resources.wimpmusic.com/images/{0}/{1}x{2}.jpg", id.Replace('-', '/'), width, height);
+        }
+
+        public static string GetPlaylistImageUrl(String image, String playlistUuid, RectImageSize size)
         {
             int w = 750;
             int h = 500;
             if (!RestUtility.ParseImageSize(size.ToString(), out w, out h))
                 throw new ArgumentException("Invalid image size", "size");
-            String url = null;
             if (!String.IsNullOrEmpty(image))
-                url = String.Format("http://resources.wimpmusic.com/images/{0}/{1}x{2}.jpg", image.Replace('-', '/'), w, h);
+                return GetImageUrl(image, w, h);
             else
-                url = String.Format("http://images.tidalhifi.com/im/im?w={1}&h={2}&uuid={0}&rows=2&cols=3&noph", playlistUuid, w, h);
-            return url;
+                return String.Format("http://images.tidalhifi.com/im/im?w={1}&h={2}&uuid={0}&rows=2&cols=3&noph", playlistUuid, w, h);
         }
 
         public static string GetAlbumCoverUrl(String cover, Int32 albumId, AlbumCoverSize size)
@@ -55,7 +58,7 @@ namespace OpenTidl
                 throw new ArgumentException("Invalid image size", "size");
             String url = null;
             if (!String.IsNullOrEmpty(cover))
-                url = String.Format("http://resources.wimpmusic.com/images/{0}/{1}x{2}.jpg", cover.Replace('-', '/'), w, h);
+                url = GetImageUrl(cover, w, h);
             else
                 url = String.Format("http://images.tidalhifi.com/im/im?w={1}&h={2}&albumid={0}&noph", albumId, w, h);
 
@@ -70,14 +73,14 @@ namespace OpenTidl
                 throw new ArgumentException("Invalid image size", "size");
             String url = null;
             if (!String.IsNullOrEmpty(picture))
-                url = String.Format("http://resources.wimpmusic.com/images/{0}/{1}x{2}.jpg", picture.Replace('-', '/'), w, h);
+                url = GetImageUrl(picture, w, h);
             else
                 url = String.Format("http://images.tidalhifi.com/im/im?w={1}&h={2}&artistid={0}&noph", artistId, w, h);
 
             return url;
         }
 
-        public static string GetVideoImageUrl(String imageId, String imagePath, VideoImageSize size)
+        public static string GetVideoImageUrl(String imageId, String imagePath, RectImageSize size)
         {
             int w = 750;
             int h = 500;
@@ -85,7 +88,7 @@ namespace OpenTidl
                 throw new ArgumentException("Invalid image size", "size");
             String url = null;
             if (!String.IsNullOrEmpty(imageId))
-                url = String.Format("http://resources.wimpmusic.com/images/{0}/{1}x{2}.jpg", imageId.Replace('-', '/'), w, h);
+                url = GetImageUrl(imageId, w, h);
             else
                 url = String.Format("http://images.tidalhifi.com/im/im?w={1}&h={2}&img={0}&noph", imagePath, w, h);
             return url;
@@ -128,7 +131,7 @@ namespace OpenTidl
         /// <summary>
         /// Helper method to retrieve a stream with a playlist image
         /// </summary>
-        public Task<WebStreamModel> GetPlaylistImageAsync(PlaylistModel model, PlaylistImageSize size)
+        public Task<WebStreamModel> GetPlaylistImageAsync(PlaylistModel model, RectImageSize size)
         {
             return GetPlaylistImageAsync(model.Image, model.Uuid, size);
         }
@@ -136,7 +139,7 @@ namespace OpenTidl
         /// <summary>
         /// Helper method to retrieve a stream with a playlist image
         /// </summary>
-        public Task<WebStreamModel> GetPlaylistImageAsync(String image, String playlistUuid, PlaylistImageSize size)
+        public Task<WebStreamModel> GetPlaylistImageAsync(String image, String playlistUuid, RectImageSize size)
         {
             string url = GetPlaylistImageUrl(image, playlistUuid, size);
             return RestClient.GetWebStreamModelAsync(url);
@@ -145,7 +148,7 @@ namespace OpenTidl
         /// <summary>
         /// Helper method to retrieve a stream with a video conver image
         /// </summary>
-        public Task<WebStreamModel> GetVideoImageAsync(VideoModel model, VideoImageSize size)
+        public Task<WebStreamModel> GetVideoImageAsync(VideoModel model, RectImageSize size)
         {
             return GetVideoImageAsync(model.ImageId, model.ImagePath, size);
         }
@@ -153,7 +156,7 @@ namespace OpenTidl
         /// <summary>
         /// Helper method to retrieve a stream with a video conver image
         /// </summary>
-        public Task<WebStreamModel> GetVideoImageAsync(String imageId, String imagePath, VideoImageSize size)
+        public Task<WebStreamModel> GetVideoImageAsync(String imageId, String imagePath, RectImageSize size)
         {
             string url = GetVideoImageUrl(imageId, imagePath, size);
             return RestClient.GetWebStreamModelAsync(url);

@@ -51,7 +51,7 @@ namespace OpenTidl.Models
         [DataMember(Name = "streamReady")]
         public Boolean StreamReady { get; private set; }
 
-        [IgnoreDataMember]
+        [DataMember(Name = "streamStartDate")]
         public DateTime? StreamStartDate { get; private set; }
 
         [DataMember(Name = "title")]
@@ -91,15 +91,5 @@ namespace OpenTidl.Models
         [DataMember(Name = "audioQuality")]
         public String AudioQuality { get; private set; }
 
-        #region json helpers
-
-        [DataMember(Name = "streamStartDate")]
-        private String StreamStartDateHelper
-        {
-            get { return RestUtility.FormatDate(StreamStartDate); }
-            set { StreamStartDate = RestUtility.ParseDate(value); }
-        }
-
-        #endregion
     }
 }

@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 
 namespace OpenTidl.Enums
 {
-    public enum VideoImageSize
+    public enum RectImageSize
     {
         Size_160x107,
         Size_320x214,
         Size_480x320,
         Size_640x428,
         Size_750x500,
-        Size_1080x720
+        Size_1080x720,
+        Size_1100x800
     }
 }

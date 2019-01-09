@@ -40,7 +40,7 @@ namespace OpenTidl.Models
         [DataMember(Name = "subscription")]
         public SubscriptionModel Subscription { get; private set; }
 
-        [IgnoreDataMember]
+        [DataMember(Name = "validUntil")]
         public DateTime? ValidUntil { get; private set; }
 
 
@@ -77,13 +77,6 @@ namespace OpenTidl.Models
         {
             get { return HighestSoundQuality.ToString(); }
             set { HighestSoundQuality = RestUtility.ParseEnum<SoundQuality>(value); }
-        }
-
-        [DataMember(Name = "validUntil")]
-        private String ValidUntilDateHelper
-        {
-            get { return RestUtility.FormatDate(ValidUntil); }
-            set { ValidUntil = RestUtility.ParseDate(value); }
         }
 
         #endregion

@@ -36,23 +36,11 @@ namespace OpenTidl.Models
         [DataMember(Name = "text")]
         public String Text { get; private set; }
 
-
         [DataMember(Name = "summary")]
         public String Summary { get; private set; }
 
-        [IgnoreDataMember]
-        public DateTime? LastUpdated { get; private set; }
-
-
-        #region json helpers
-
         [DataMember(Name = "lastUpdated")]
-        private String LastUpdatedDateHelper
-        {
-            get { return RestUtility.FormatDate(LastUpdated); }
-            set { LastUpdated = RestUtility.ParseDate(value); }
-        }
-
-        #endregion
+        public DateTime? LastUpdated { get; private set; }
+       
     }
 }

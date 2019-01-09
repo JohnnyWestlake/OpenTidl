@@ -31,7 +31,7 @@ namespace OpenTidl.Models
     [DataContract]
     public class PlaylistModel : ModelBase
     {
-        [IgnoreDataMember]
+        [DataMember(Name = "created")]
         public DateTime? Created { get; private set; }
 
         [DataMember(Name = "creator")]
@@ -46,11 +46,17 @@ namespace OpenTidl.Models
         [DataMember(Name = "image")]
         public String Image { get; private set; }
 
-        [IgnoreDataMember]
+        [DataMember(Name = "squareImage")]
+        public String SquareImage { get; private set; }
+
+        [DataMember(Name = "lastUpdated")]
         public DateTime? LastUpdated { get; private set; }
 
         [DataMember(Name = "numberOfTracks")]
         public Int32 NumberOfTracks { get; private set; }
+
+        [DataMember(Name = "numberOfVideos")]
+        public Int32 NumberOfVideos { get; private set; }
 
         [DataMember(Name = "offlineDateAdded")]
         public Int64 OfflineDateAdded { get; private set; }
@@ -80,20 +86,6 @@ namespace OpenTidl.Models
         {
             get { return Type.ToString(); }
             set { Type = RestUtility.ParseEnum<PlaylistType>(value); }
-        }
-
-        [DataMember(Name = "created")]
-        private String CreatedDateHelper
-        {
-            get { return RestUtility.FormatDate(Created); }
-            set { Created = RestUtility.ParseDate(value); }
-        }
-
-        [DataMember(Name = "lastUpdated")]
-        private String LastUpdatedDateHelper
-        {
-            get { return RestUtility.FormatDate(LastUpdated); }
-            set { LastUpdated = RestUtility.ParseDate(value); }
         }
 
         #endregion
