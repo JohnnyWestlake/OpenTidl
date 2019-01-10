@@ -13,7 +13,7 @@ namespace OpenTidl.Models
     public interface ITidalPlaylistItem
     {
         [DataMember(Name="type")]
-        string Type { get; set; }
+        string Type { get; }
     }
 
     [DataContract]

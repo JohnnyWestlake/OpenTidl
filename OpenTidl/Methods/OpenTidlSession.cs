@@ -488,15 +488,27 @@ namespace OpenTidl.Methods
 
         #region page methods
 
-        public Task<PageRoot> GetHomePageAsync()
+        public Task<TidalPage> GetPageAsync(string path)
         {
-            return _restClient.HandleAsync<PageRoot>(
-                $"/pages/home", new
+            path = path.Replace("pages/", string.Empty);
+
+            return _restClient.HandleAsync<TidalPage>(
+                $"/pages/{path}", new
                 {
                     locale = "en_US",
                     deviceType = "DESKTOP",
                     countryCode = CountryCode
                 }, null, "GET", false, _headers);
+        }
+
+        public Task<TidalPage> GetHomePageAsync()
+        {
+            return GetPageAsync("home");
+        }
+
+        public Task<TidalPage> GetExplorePageAsync()
+        {
+            return GetPageAsync("explore");
         }
 
         #endregion

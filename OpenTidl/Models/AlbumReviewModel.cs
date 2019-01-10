@@ -41,6 +41,5 @@ namespace OpenTidl.Models
 
         [DataMember(Name = "lastUpdated")]
         public DateTime? LastUpdated { get; private set; }
-       
     }
 }

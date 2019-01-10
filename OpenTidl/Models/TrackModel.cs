@@ -72,7 +72,6 @@ namespace OpenTidl.Models
         [DataMember(Name = "peak")]
         public double ReplayGainPeak { get; private set; }
 
-
         [DataMember(Name = "url")]
         public String Url { get; private set; }
 

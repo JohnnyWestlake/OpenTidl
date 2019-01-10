@@ -48,21 +48,21 @@ namespace OpenTidl.Models
     }
 
     [DataContract]
-    public class PageRoot
+    public class TidalPage
     {
         [DataMember(Name = "id")]
         public string Id { get; set; }
         [DataMember(Name = "title")]
         public string Title { get; set; }
         [DataMember(Name = "rows")]
-        public Row[] Rows { get; set; }
+        public TidalPageRow[] Rows { get; set; }
     }
 
     [DataContract]
-    public class Row
+    public class TidalPageRow
     {
         [DataMember(Name = "modules")]
-        public ModuleBase[] Modules { get; set; }
+        public TidalModuleBase[] Modules { get; set; }
     }
 
     
@@ -73,15 +73,17 @@ namespace OpenTidl.Models
     
     [DataContract]
     [JsonConverter(typeof(JsonSubtypes), "type")]
-    [JsonSubtypes.KnownSubType(typeof(ItemsModule), nameof(ModuleType.FEATURED_PROMOTIONS))]
-    [JsonSubtypes.KnownSubType(typeof(ItemsModule), nameof(ModuleType.MULTIPLE_TOP_PROMOTIONS))]
-    [JsonSubtypes.KnownSubType(typeof(Module<TidalMix>), nameof(ModuleType.MIX_LIST))]
-    [JsonSubtypes.KnownSubType(typeof(Module<VideoModel>), nameof(ModuleType.VIDEO_LIST))]
-    [JsonSubtypes.KnownSubType(typeof(Module<PlaylistModel>), nameof(ModuleType.PLAYLIST_LIST))]
-    [JsonSubtypes.KnownSubType(typeof(Module<AlbumModel>), nameof(ModuleType.ALBUM_LIST))]
-    [JsonSubtypes.KnownSubType(typeof(Module<ArtistModel>), nameof(ModuleType.ARTIST_LIST))]
-    [JsonSubtypes.KnownSubType(typeof(Module<TrackModel>), nameof(ModuleType.TRACK_LIST))]
-    public class ModuleBase : IModule
+    [JsonSubtypes.KnownSubType(typeof(TidalItemsModule), nameof(ModuleType.FEATURED_PROMOTIONS))]
+    [JsonSubtypes.KnownSubType(typeof(TidalItemsModule), nameof(ModuleType.MULTIPLE_TOP_PROMOTIONS))]
+    [JsonSubtypes.KnownSubType(typeof(TidalModule<TidalMix>), nameof(ModuleType.MIX_LIST))]
+    [JsonSubtypes.KnownSubType(typeof(TidalModule<VideoModel>), nameof(ModuleType.VIDEO_LIST))]
+    [JsonSubtypes.KnownSubType(typeof(TidalModule<PlaylistModel>), nameof(ModuleType.PLAYLIST_LIST))]
+    [JsonSubtypes.KnownSubType(typeof(TidalModule<AlbumModel>), nameof(ModuleType.ALBUM_LIST))]
+    [JsonSubtypes.KnownSubType(typeof(TidalModule<ArtistModel>), nameof(ModuleType.ARTIST_LIST))]
+    [JsonSubtypes.KnownSubType(typeof(TidalModule<TrackModel>), nameof(ModuleType.TRACK_LIST))]
+    [JsonSubtypes.KnownSubType(typeof(TidalModule<TidalPageLink>), nameof(ModuleType.PAGE_LINKS_CLOUD))]
+    [JsonSubtypes.KnownSubType(typeof(TidalModule<TidalPageLink>), nameof(ModuleType.PAGE_LINKS))]
+    public class TidalModuleBase : IModule
     {
         [DataMember(Name = "id")]
         public string Id { get; set; }
@@ -94,21 +96,21 @@ namespace OpenTidl.Models
     }
 
     [DataContract]
-    public class ItemsModule : ModuleBase
+    public class TidalItemsModule : TidalModuleBase
     {
         [DataMember(Name = "items")]
-        public ModuleItem[] Items { get; set; }
+        public TidalModuleItem[] Items { get; set; }
     }
 
     [DataContract]
-    public class Module<T> : ModuleBase where T : class
+    public class TidalModule<T> : TidalModuleBase where T : class
     {
         [DataMember(Name = "supportsPaging")]
         public bool SupportsPaging { get; set; }
         [DataMember(Name = "scroll")]
         public string Scroll { get; set; }
         [DataMember(Name = "pagedList")]
-        public PagedList<T> PagedList { get; set; }
+        public TidalPagedList<T> PagedList { get; set; }
         [DataMember(Name = "showMore")]
         public PagingMetadata ShowMore { get; set; }
         [DataMember(Name = "listFormat")]
@@ -127,7 +129,7 @@ namespace OpenTidl.Models
     }
 
     [DataContract]
-    public class PagedList<T> where T : class
+    public class TidalPagedList<T> where T : class
     {
         [DataMember(Name = "limit")]
         public int Limit { get; set; }
@@ -143,7 +145,7 @@ namespace OpenTidl.Models
 
 
     [DataContract]
-    public class ModuleItem
+    public class TidalModuleItem
     {
         [DataMember(Name = "header")]
         public string Header { get; set; }
