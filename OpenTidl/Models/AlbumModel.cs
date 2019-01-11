@@ -46,6 +46,9 @@ namespace OpenTidl.Models
         [DataMember(Name = "duration")]
         public Int32 Duration { get; private set; }
 
+        [DataMember(Name = "explicit")]
+        public bool Explicit { get; private set; }
+
         [DataMember(Name = "id")]
         public Int32 Id { get; private set; }
 
