@@ -486,6 +486,7 @@ namespace OpenTidl.Methods
 
         #endregion
 
+
         #region page methods
 
         public Task<TidalPage> GetPageAsync(string path)
@@ -509,6 +510,30 @@ namespace OpenTidl.Methods
         public Task<TidalPage> GetExplorePageAsync()
         {
             return GetPageAsync("explore");
+        }
+
+        public Task<TidalPage> GetMixPageAsync(string mixId)
+        {
+            return _restClient.HandleAsync<TidalPage>(
+                $"/pages/mix", new
+                {
+                    mixId,
+                    locale = "en_US",
+                    deviceType = "DESKTOP",
+                    countryCode = CountryCode
+                }, null, "GET", false, _headers);
+        }
+
+        public Task<TidalPage> GetAlbumPageAsync(int albumId)
+        {
+            return _restClient.HandleAsync<TidalPage>(
+                $"/pages/album", new
+                {
+                    albumId,
+                    locale = "en_US",
+                    deviceType = "DESKTOP",
+                    countryCode = CountryCode
+                }, null, "GET", false, _headers);
         }
 
         #endregion

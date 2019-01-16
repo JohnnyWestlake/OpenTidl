@@ -68,11 +68,12 @@ namespace OpenTidl.Models
     
     public interface IModule
     {
-        string type { get; set; }
+        string Type { get; set; }
     }
     
     [DataContract]
     [JsonConverter(typeof(JsonSubtypes), "type")]
+    [JsonSubtypes.KnownSubType(typeof(TidalAlbumHeaderModel), nameof(ModuleType.ALBUM_HEADER))]
     [JsonSubtypes.KnownSubType(typeof(TidalItemsModule), nameof(ModuleType.FEATURED_PROMOTIONS))]
     [JsonSubtypes.KnownSubType(typeof(TidalItemsModule), nameof(ModuleType.MULTIPLE_TOP_PROMOTIONS))]
     [JsonSubtypes.KnownSubType(typeof(TidalModule<TidalMix>), nameof(ModuleType.MIX_LIST))]
@@ -83,12 +84,13 @@ namespace OpenTidl.Models
     [JsonSubtypes.KnownSubType(typeof(TidalModule<TrackModel>), nameof(ModuleType.TRACK_LIST))]
     [JsonSubtypes.KnownSubType(typeof(TidalModule<TidalPageLink>), nameof(ModuleType.PAGE_LINKS_CLOUD))]
     [JsonSubtypes.KnownSubType(typeof(TidalModule<TidalPageLink>), nameof(ModuleType.PAGE_LINKS))]
+    [JsonSubtypes.KnownSubType(typeof(TidalModule<ITidalPlaylistItem>), nameof(ModuleType.ALBUM_ITEMS))]
     public class TidalModuleBase : IModule
     {
         [DataMember(Name = "id")]
         public string Id { get; set; }
-        [DataMember]
-        public string type { get; set; }
+        [DataMember(Name = "type")]
+        public string Type { get; set; }
         [DataMember(Name = "width")]
         public int Width { get; set; }
         [DataMember(Name = "title")]
@@ -103,20 +105,25 @@ namespace OpenTidl.Models
     }
 
     [DataContract]
-    public class TidalModule<T> : TidalModuleBase where T : class
+    public class TidalModule : TidalModuleBase
     {
         [DataMember(Name = "supportsPaging")]
         public bool SupportsPaging { get; set; }
         [DataMember(Name = "scroll")]
         public string Scroll { get; set; }
-        [DataMember(Name = "pagedList")]
-        public TidalPagedList<T> PagedList { get; set; }
         [DataMember(Name = "showMore")]
         public PagingMetadata ShowMore { get; set; }
         [DataMember(Name = "listFormat")]
         public string ListFormat { get; set; }
         [DataMember(Name = "showTableHeaders")]
         public bool ShowTableHeaders { get; set; }
+    }
+
+    [DataContract]
+    public class TidalModule<T> : TidalModule where T : class
+    {
+        [DataMember(Name = "pagedList")]
+        public TidalPagedList<T> PagedList { get; set; }
     }
 
     [DataContract]
@@ -163,5 +170,23 @@ namespace OpenTidl.Models
         public string Text { get; set; }
         [DataMember(Name = "featured")]
         public bool Featured { get; set; }
+    }
+
+    [DataContract]
+    public class TidalAlbumHeaderModel : TidalModuleBase
+    {
+        [DataMember(Name = "album")]
+        public AlbumModel Album { get; set; }
+        [DataMember(Name = "credits")]
+        public TidalCreditsModel Credits { get; set; }
+        [DataMember(Name = "review")]
+        public AlbumReviewModel Review { get; set; }
+    }
+
+    [DataContract]
+    public class TidalCreditsModel
+    {
+        [DataMember(Name = "items")]
+        public List<CreditModel> Items { get; set; }
     }
 }
