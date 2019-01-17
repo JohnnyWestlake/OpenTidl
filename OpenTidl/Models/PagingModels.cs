@@ -74,6 +74,7 @@ namespace OpenTidl.Models
     [DataContract]
     [JsonConverter(typeof(JsonSubtypes), "type")]
     [JsonSubtypes.KnownSubType(typeof(TidalAlbumHeaderModel), nameof(ModuleType.ALBUM_HEADER))]
+    [JsonSubtypes.KnownSubType(typeof(TidalArtistHeaderModel), nameof(ModuleType.ARTIST_HEADER))]
     [JsonSubtypes.KnownSubType(typeof(TidalItemsModule), nameof(ModuleType.FEATURED_PROMOTIONS))]
     [JsonSubtypes.KnownSubType(typeof(TidalItemsModule), nameof(ModuleType.MULTIPLE_TOP_PROMOTIONS))]
     [JsonSubtypes.KnownSubType(typeof(TidalModule<TidalMix>), nameof(ModuleType.MIX_LIST))]
@@ -181,6 +182,17 @@ namespace OpenTidl.Models
         public TidalCreditsModel Credits { get; set; }
         [DataMember(Name = "review")]
         public AlbumReviewModel Review { get; set; }
+    }
+
+    [DataContract]
+    public class TidalArtistHeaderModel : TidalModuleBase
+    {
+        [DataMember(Name = "artist")]
+        public ArtistModel Artist { get; set; }
+        [DataMember(Name = "bio")]
+        public ArtistBiographyModel Biography { get; set; }
+        [DataMember(Name = "artistMix")]
+        public TidalMix Mix { get; set; }
     }
 
     [DataContract]

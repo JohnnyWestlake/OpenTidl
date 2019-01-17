@@ -492,10 +492,23 @@ namespace OpenTidl.Methods
         public Task<TidalPage> GetPageAsync(string path)
         {
             path = path.Replace("pages/", string.Empty);
-
             return _restClient.HandleAsync<TidalPage>(
                 $"/pages/{path}", new
                 {
+                    locale = "en_US",
+                    deviceType = "DESKTOP",
+                    countryCode = CountryCode
+                }, null, "GET", false, _headers);
+        }
+
+        public Task<JsonList<T>> GetListPageAsync<T>(string path, int offset, int limit = 50) // 50 is max
+        {
+            path = path.Replace("pages/", string.Empty);
+            return _restClient.HandleAsync<JsonList<T>>(
+                $"/pages/{path}", new
+                {
+                    offset,
+                    limit,
                     locale = "en_US",
                     deviceType = "DESKTOP",
                     countryCode = CountryCode
@@ -530,6 +543,18 @@ namespace OpenTidl.Methods
                 $"/pages/album", new
                 {
                     albumId,
+                    locale = "en_US",
+                    deviceType = "DESKTOP",
+                    countryCode = CountryCode
+                }, null, "GET", false, _headers);
+        }
+
+        public Task<TidalPage> GetArtistPageAsync(int artistId)
+        {
+            return _restClient.HandleAsync<TidalPage>(
+                $"/pages/artist", new
+                {
+                    artistId,
                     locale = "en_US",
                     deviceType = "DESKTOP",
                     countryCode = CountryCode

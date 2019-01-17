@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (C) 2015  Jack Fagner
+    Copyright (C) 2019 J. Westlake
 
     This file is part of OpenTidl.
 
@@ -15,10 +15,6 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with OpenTidl.  If not, see <http://www.gnu.org/licenses/>.
-
-    --- 
-
-    Modified 2019 J. Westlake
 */
 
 using System.Collections.Generic;

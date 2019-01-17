@@ -67,7 +67,8 @@ namespace OpenTidl.Transport
         public async Task<RestResponse<T>> GetResponseAsync<T>(String path, Object query, Object request, String method, bool canCache, params (String, String)[] extraHeaders) where T : class
         {
             var queryString = RestUtility.GetFormEncodedString(query);
-            var url = String.IsNullOrEmpty(queryString) ? $"{ApiEndpoint}{path}" : $"{ApiEndpoint}{path}?{queryString}";
+            var url = String.IsNullOrEmpty(queryString) ? $"{ApiEndpoint}{path}" : 
+                (path.Contains("?") ? $"{ApiEndpoint}{path}&{queryString}" : $"{ApiEndpoint}{path}?{queryString}");
             byte[] content = null;
 
             if (RestUtility.GetFormEncodedList(request) is var data && data != null)
@@ -144,7 +145,6 @@ namespace OpenTidl.Transport
                     Headers.Add((h.Key, h.Value));
             }
 
-            //_serializer = new OpenTidlDataContractDeserializer();
             _serializer = new NewtonsoftSerializer();
         }
 

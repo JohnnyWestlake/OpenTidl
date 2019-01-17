@@ -20,12 +20,9 @@
 
     Modified 2019 J. Westlake
 */
+
 using System;
-using System.Collections.Generic;
 using OpenTidl.Models.Base;
-using System.Runtime.Serialization.Json;
-using System.IO;
-using OpenTidl.Models;
 
 namespace OpenTidl.Transport
 {
