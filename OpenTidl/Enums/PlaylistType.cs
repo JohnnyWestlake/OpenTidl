@@ -24,6 +24,8 @@ namespace OpenTidl.Enums
     {
         EDITORIAL,
         PRIVATE,
-        USER
+        USER,
+        ARTIST,
+        PODCAST
     }
 }
