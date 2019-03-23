@@ -351,12 +351,32 @@ namespace OpenTidl.Methods
                 }, null, "GET", false, _headers);
         }
 
-        public Task<JsonList<JsonListItem<PlaylistModel>>> GetFavoritePlaylistsAsync(Int32 limit = OpenTidlConstants.DEFAULT_LIMIT)
+        public Task<JsonList<JsonListItem<PlaylistModel>>> GetFavoritePlaylistsAsync(
+            int offset = 0, 
+            Int32 limit = 50)
         {
             return _restClient.HandleAsync<JsonList<JsonListItem<PlaylistModel>>>(
                 $"/users/{UserId}/favorites/playlists", new
                 {
+                    offset,
                     limit,
+                    countryCode = CountryCode
+                }, null, "GET", false, _headers);
+        }
+
+        public Task<JsonList<UserPlaylistModel>> GetPlaylistsAndFavoritePlaylistsAsync(
+            int offset = 0,
+            Int32 limit = 50, // Playlists limit is 50 for some reason
+            SortOrder order = SortOrder.DATE,
+            SortDirection direction = SortDirection.DESC)
+        {
+            return _restClient.HandleAsync<JsonList<UserPlaylistModel>>(
+                $"/users/{UserId}/playlistsAndFavoritePlaylists", new
+                {
+                    offset,
+                    limit,
+                    order = order.ToString("F"),
+                    orderDirection = direction.ToString("F"),
                     countryCode = CountryCode
                 }, null, "GET", false, _headers);
         }
