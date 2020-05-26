@@ -88,7 +88,7 @@ namespace OpenTidl.Methods
         public Task<PlaylistModel> GetPlaylistAsync(String playlistUuid)
         {
             return _restClient.HandleAsync<PlaylistModel>(
-                RestUtility.FormatUrl("/playlists/{uuid}", new { uuid = playlistUuid }), new
+                $"/playlists/{playlistUuid}", new
                 {
                     countryCode = CountryCode
                 }, null, "GET", false, _headers);
@@ -97,7 +97,7 @@ namespace OpenTidl.Methods
         public Task<JsonList<ITidalPlaylistItem>> GetPlaylistItemsAsync(String playlistUuid, Int32 offset = 0, Int32 limit = OpenTidlConstants.DEFAULT_LIMIT)
         {
             return _restClient.HandleAsync<JsonList<ITidalPlaylistItem>>(
-                RestUtility.FormatUrl("/playlists/{uuid}/items", new { uuid = playlistUuid }), new
+                $"/playlists/{playlistUuid}/items", new
                 {
                     offset,
                     limit,
@@ -108,7 +108,7 @@ namespace OpenTidl.Methods
         public Task<JsonList<TrackModel>> GetPlaylistTracksAsync(String playlistUuid, Int32 offset = 0, Int32 limit = OpenTidlConstants.DEFAULT_LIMIT)
         {
             return _restClient.HandleAsync<JsonList<TrackModel>>(
-                RestUtility.FormatUrl("/playlists/{uuid}/tracks", new { uuid = playlistUuid }), new
+                $"/playlists/{playlistUuid}/tracks", new
                 {
                     offset,
                     limit,
@@ -119,7 +119,7 @@ namespace OpenTidl.Methods
         public Task<EmptyModel> AddPlaylistTracksAsync(String playlistUuid, String playlistETag, IEnumerable<Int32> trackIds, Int32 toIndex = 0)
         {
             return _restClient.HandleAsync<EmptyModel>(
-                RestUtility.FormatUrl("/playlists/{uuid}/tracks", new { uuid = playlistUuid }), new
+                $"/playlists/{playlistUuid}/tracks", new
                 {
                     countryCode = CountryCode
                 }, new
@@ -147,10 +147,7 @@ namespace OpenTidl.Methods
         public Task<EmptyModel> DeletePlaylistAsync(String playlistUuid, String playlistETag)
         {
             return _restClient.HandleAsync<EmptyModel>(
-                RestUtility.FormatUrl("/playlists/{uuid}", new
-                {
-                    uuid = playlistUuid
-                }), new
+                $"/playlists/{playlistUuid}", new
                 {
                     countryCode = CountryCode
                 }, null, "DELETE", false,
@@ -205,7 +202,7 @@ namespace OpenTidl.Methods
         public Task<SessionModel> GetSessionAsync()
         {
             return _restClient.HandleAsync<SessionModel>(
-                RestUtility.FormatUrl("/sessions/{sessionId}", new { sessionId = SessionId }),
+                $"/sessions/{SessionId}",
                 null, null, "GET", false, _headers);
         }
 
@@ -255,7 +252,7 @@ namespace OpenTidl.Methods
         public Task<JsonList<ClientModel>> GetUserClientsAsync(ClientFilter filter, Int32 limit = OpenTidlConstants.DEFAULT_LIMIT)
         {
             return _restClient.HandleAsync<JsonList<ClientModel>>(
-                RestUtility.FormatUrl("/users/{userId}/clients", new { userId = UserId }), new
+                $"/users/{UserId}/clients", new
                 {
                     filter = filter.ToString(),
                     limit,
@@ -266,7 +263,7 @@ namespace OpenTidl.Methods
         public Task<JsonList<PlaylistModel>> GetUserPlaylistsAsync(Int32 limit = OpenTidlConstants.DEFAULT_LIMIT)
         {
             return _restClient.HandleAsync<JsonList<PlaylistModel>>(
-                RestUtility.FormatUrl("/users/{userId}/playlists", new { userId = UserId }), new
+                $"/users/{UserId}/playlists", new
                 {
                     limit,
                     countryCode = CountryCode
@@ -276,7 +273,7 @@ namespace OpenTidl.Methods
         public Task<PlaylistModel> CreateUserPlaylistAsync(String title)
         {
             return _restClient.HandleAsync<PlaylistModel>(
-                RestUtility.FormatUrl("/users/{userId}/playlists", new { userId = UserId }), new
+                $"/users/{UserId}/playlists", new
                 {
                     countryCode = CountryCode
                 }, new
@@ -288,7 +285,7 @@ namespace OpenTidl.Methods
         public Task<UserSubscriptionModel> GetUserSubscriptionAsync()
         {
             return _restClient.HandleAsync<UserSubscriptionModel>(
-                RestUtility.FormatUrl("/users/{userId}/subscription", new { userId = UserId }), new
+                $"/users/{UserId}/subscription", new
                 {
                     countryCode = CountryCode
                 }, null, "GET", false, _headers);
@@ -297,7 +294,7 @@ namespace OpenTidl.Methods
         public Task<UserModel> GetUserAsync()
         {
             return _restClient.HandleAsync<UserModel>(
-                RestUtility.FormatUrl("/users/{userId}", new { userId = UserId }), new
+                $"/users/{UserId}", new
                 {
                     countryCode = CountryCode
                 }, null, "GET", false, _headers);
